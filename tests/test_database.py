@@ -1,11 +1,11 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import pytest
-from pytest_mock import mocker 
+import unittest
 
 from src import database
 
-def test_db_connect_function_exists(mocker):
-  mocker.patch.object(database, 'db_connect') 
+class Tests_Login(unittest.TestCase):
+  def test_get_user_credentials(self):
+    print('a')
