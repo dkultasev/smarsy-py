@@ -12,16 +12,25 @@ def get_page_content(url):
         return err
 
 
-def validate_login_page_source(html):
-    try:
-        if html.startswith('<html>') and html.endswith('</html>') \
-           and BeautifulSoup(html, 'html.parser').title.text ==  \
-           'Smarsy - Смарсі - Україна':
-            return BeautifulSoup(html, 'html.parser').title.text
-    except:
-        raise ValueError('Invalid title in the page source')
-        print('Invalid title in the page source')
+def validate_title(html):
+    if BeautifulSoup(html, 'html.parser').title.text == \
+                     'Smarsy - Смарсі - Україна':
+        return True
+    else:
         sys.exit()
+
+
+
+# def validate_login_page_source(html):
+#     try:
+#         if html.startswith('<html>') and html.endswith('</html>') \
+#            and BeautifulSoup(html, 'html.parser').title.text ==  \
+#            'Smarsy - Смарсі - Україна':
+#             return BeautifulSoup(html, 'html.parser').title.text
+#     except:
+#         raise ValueError('Invalid title in the page source')
+#         print('Invalid title in the page source')
+#         sys.exit()
 
 
 
