@@ -25,8 +25,9 @@ class Tests_Login(unittest.TestCase):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 200
         get_login_page(url)
-        response_text = mock_response.text
-        self.assertEqual(get_login_page(url), response_text)
+        expected_text = 'This is login Page'
+        mock_response(url).text = expected_text
+        self.assertEqual(get_login_page(url), expected_text)
     # def test_read_credentials_from_file(self):
 
     # def test_get_user_credentials(self):
