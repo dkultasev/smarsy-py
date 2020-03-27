@@ -1,21 +1,32 @@
 import os
 import sys
 import unittest
-# from src import parse.get_credentials
+from unittest.mock import patch
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.parse import get_login_page
 
 
 class Tests_Login(unittest.TestCase):
+    def setUp(self):
+        pass
 
-    def test_read_credentials_from_file(self):
+    def tearDown(self):
+        pass
 
+    @patch('requests.get')
+    def test_right_url(self, mock_request):
+        exepted_url = 'https://smarsy.ua/'
+        mock_request.return_value.status_code = 200
+        self.assertEqual(get_login_page(exepted_url), exepted_url)
 
-    def test_get_user_credentials(self):
-        expected_creds = {'login': 'user', 'password': ''}
-        actual_creds = get_credentials()
-        self.assertEqual(expected_creds, actual_creds)
+    # def test_read_credentials_from_file(self):
+
+    # def test_get_user_credentials(self):
+    #     expected_creds = {'login': 'user', 'password': ''}
+    #     actual_creds = get_credentials()
+    #     self.assertEqual(expected_creds, actual_creds)
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=1)
