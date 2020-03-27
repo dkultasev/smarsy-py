@@ -2,12 +2,12 @@ import requests
 
 
 def get_login_page(url):
-    r = requests.get(url)
-    if r.status_code == 200:
-        return r.text
-    elif r.status_code == 404:
-        r.text == 'Page not Found'
-        return r.text
+    try:
+        r = requests.get(url)
+        if r.status_code == 200:
+            return r.text
+    except requests.HTTPError as err:
+        return err
 
 
 def get_credentials(parameter_list):

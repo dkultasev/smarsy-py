@@ -2,6 +2,7 @@ import os
 import sys
 import unittest
 from unittest.mock import patch
+import requests
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.parse import get_login_page
@@ -33,9 +34,7 @@ class Tests_Login(unittest.TestCase):
     def test_response_status_code_404(self, mock_response):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 404
-        expected_text = 'Page not Found'
-        mock_response(url).text = expected_text
-        self.assertEqual(get_login_page(url), expected_text)
+        self.assertRaises(requests.HTTPError, get_login_page(url))
 
     # def test_read_credentials_from_file(self):
 
