@@ -21,11 +21,12 @@ class Tests_Login(unittest.TestCase):
         mock_request.assert_called_with(exepted_url)
 
     @patch('requests.get')
-    def test_response_status_code(self, mock_status_code):
+    def test_response_status_code(self, mock_response):
         url = 'https://smarsy.ua/'
-        mock_status_code.return_value.status_code = 200
+        mock_response.return_value.status_code = 200
         get_login_page(url)
-        self.assertEqual(get_login_page(url), "test contenet page")
+        response_text = mock_response.text
+        self.assertEqual(get_login_page(url), response_text)
     # def test_read_credentials_from_file(self):
 
     # def test_get_user_credentials(self):
