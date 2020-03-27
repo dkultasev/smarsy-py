@@ -17,8 +17,8 @@ class Tests_Login(unittest.TestCase):
     @patch('requests.get')
     def test_right_url(self, mock_request):
         exepted_url = 'https://smarsy.ua/'
-        mock_request.return_value.status_code = 200
-        self.assertEqual(get_login_page(exepted_url), exepted_url)
+        get_login_page(exepted_url)
+        mock_request.assert_called_with(exepted_url)
 
     # def test_read_credentials_from_file(self):
 
