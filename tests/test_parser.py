@@ -21,13 +21,17 @@ class Tests_Login(unittest.TestCase):
         mock_request.assert_called_with(exepted_url)
 
     @patch('requests.get')
-    def test_response_status_code(self, mock_response):
+    def test_response_status_code_ok(self, mock_response):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 200
         get_login_page(url)
         expected_text = 'This is login Page'
         mock_response(url).text = expected_text
         self.assertEqual(get_login_page(url), expected_text)
+
+    @patch('requests.get')
+    def test_response_status_code_404(self, mock_response):
+        url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 404
         expected_text = 'Page not Found'
         mock_response(url).text = expected_text
