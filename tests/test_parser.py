@@ -3,6 +3,7 @@ import sys
 import unittest
 from unittest.mock import patch
 import requests
+from bs4 import BeautifulSoup
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.parse import get_page_content
@@ -35,6 +36,20 @@ class TestsGetPage(unittest.TestCase):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 404
         self.assertRaises(requests.HTTPError, get_page_content(url))
+
+    # def test_login_page(self, mock_response):
+    #     # url действительно тот, что нам нужен
+    #     url = 'https://smarsy.ua/'
+    #     mock_response.return_value
+    #@patch()
+    def test_login_page_returns_correct_html(self):
+        html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
+        soup = BeautifulSoup(html, 'html.parser')
+        login_page_title = soup.title.text
+        self.assertTrue(html.startswith('<html>'))
+        self.assertTrue(html.endswith('</html>'))
+        self.assertEqual('Smarsy - Смарсі - Україна', login_page_title)
+
     # def test_read_credentials_from_file(self):
 
     # def test_get_user_credentials(self):
