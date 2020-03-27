@@ -42,13 +42,11 @@ class TestsGetPage(unittest.TestCase):
     #     url = 'https://smarsy.ua/'
     #     mock_response.return_value
     #@patch()
-    def test_login_page_returns_correct_html(self):
+    def test_validate_login_page_source_returns_true_with_valid_title(self):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
-        soup = BeautifulSoup(html, 'html.parser')
-        login_page_title = soup.title.text
-        self.assertTrue(html.startswith('<html>'))
-        self.assertTrue(html.endswith('</html>'))
-        self.assertEqual('Smarsy - Смарсі - Україна', login_page_title)
+        actual = validate_login_page_source(html)
+        self.assertTrue(actual == true)
+
 
     # def test_read_credentials_from_file(self):
 
