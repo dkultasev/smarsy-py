@@ -1,7 +1,7 @@
 import requests
 
 
-def get_login_page(url):
+def get_page_content(url):
     try:
         r = requests.get(url)
         if r.status_code == 200:

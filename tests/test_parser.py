@@ -5,10 +5,10 @@ from unittest.mock import patch
 import requests
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.parse import get_login_page
+from src.parse import get_page_content
 
 
-class Tests_Login(unittest.TestCase):
+class TestsGetPage(unittest.TestCase):
     def setUp(self):
         pass
 
@@ -18,24 +18,23 @@ class Tests_Login(unittest.TestCase):
     @patch('requests.get')
     def test_right_url(self, mock_request):
         exepted_url = 'https://smarsy.ua/'
-        get_login_page(exepted_url)
+        get_page_content(exepted_url)
         mock_request.assert_called_with(exepted_url)
 
     @patch('requests.get')
     def test_response_status_code_ok(self, mock_response):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 200
-        get_login_page(url)
+        get_page_content(url)
         expected_text = 'This is login Page'
         mock_response(url).text = expected_text
-        self.assertEqual(get_login_page(url), expected_text)
+        self.assertEqual(get_page_content(url), expected_text)
 
     @patch('requests.get')
     def test_response_status_code_404(self, mock_response):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, get_login_page(url))
-
+        self.assertRaises(requests.HTTPError, get_page_content(url))
     # def test_read_credentials_from_file(self):
 
     # def test_get_user_credentials(self):
