@@ -13,11 +13,10 @@ def get_page_content(url):
 
 
 def validate_title(html):
-    try:
-        BeautifulSoup(html, 'html.parser').title.text == \
-                     'Smarsy - Смарсі - Україна'
+    if BeautifulSoup(html, 'html.parser').title.text == \
+                     'Smarsy - Смарсі - Україна':
         return True
-    except Exception as err:
+    else:
         raise Exception
 
 
