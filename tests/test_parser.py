@@ -53,7 +53,7 @@ class TestsGetPage(unittest.TestCase):
     #         print('Invalid title in the page source')
 
     def test_page_title_validate(self):
-        html = '<html><title>Smars - Смарсі - Україна</title></html>'
+        html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
         self.assertTrue(actual)
 
