@@ -48,4 +48,4 @@ class TestsGetPage(unittest.TestCase):
 
 if __name__ == '__main__':
     if '--unittest' in sys.argv:
-        subprocess.call([sys.executable, '-m', 'unittest', 'discover'])
+        subprocess.call([sys.executable, '-m', 'unittest', 'discover']) 
