@@ -3,10 +3,10 @@ import sys
 import unittest
 from unittest.mock import patch
 import requests
-from bs4 import BeautifulSoup
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.parse import get_page_content
+from src.parse import (get_page_content,
+                       validate_title)
 
 
 class TestsGetPage(unittest.TestCase):
@@ -41,11 +41,21 @@ class TestsGetPage(unittest.TestCase):
     #     # url действительно тот, что нам нужен
     #     url = 'https://smarsy.ua/'
     #     mock_response.return_value
-    #@patch()
-    def test_validate_login_page_source_returns_true_with_valid_title(self):
+
+    # def test_validate_login_page_source_returns_true_with_valid_title(self):
+    #     html = '<html><title>Smars - Смарсі - Україна</title></html>'
+    #     actual = validate_login_page_source(html)
+    #     expected_title = 'Smarsy - Смарсі - Україна'
+    #     if actual:
+    #         self.assertEqual(actual, expected_title)
+    #     else:
+    #         self.assertRaises(ValueError, actual)
+    #         print('Invalid title in the page source')
+
+    def test_page_title_validate(self):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
-        actual = validate_login_page_source(html)
-        self.assertTrue(actual == true)
+        actual = validate_title(html)
+        self.assertTrue(actual)
 
 
     # def test_read_credentials_from_file(self):
