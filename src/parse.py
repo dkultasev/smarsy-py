@@ -1,15 +1,13 @@
 import requests
-import sys
 from bs4 import BeautifulSoup
 
 
 def get_page_content(url):
-    try:
-        r = requests.get(url)
-        if r.status_code == 200:
-            return r.text
-    except requests.HTTPError as err:
-        return err
+    r = requests.get(url)
+    if r.status_code == 200:
+        return r.text
+    else:
+        raise requests.HTTPError("Error code - {}".format(r.status_code))
 
 
 def validate_title(html):
@@ -18,21 +16,3 @@ def validate_title(html):
         return True
     else:
         raise Exception
-
-
-
-# def validate_login_page_source(html):
-#     try:
-#         if html.startswith('<html>') and html.endswith('</html>') \
-#            and BeautifulSoup(html, 'html.parser').title.text ==  \
-#            'Smarsy - Смарсі - Україна':
-#             return BeautifulSoup(html, 'html.parser').title.text
-#     except:
-#         raise ValueError('Invalid title in the page source')
-#         print('Invalid title in the page source')
-#         sys.exit()
-
-
-
-def get_credentials(parameter_list):
-    pass
