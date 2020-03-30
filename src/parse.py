@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import json
 
 
 def get_page_content(url):
@@ -16,3 +17,8 @@ def validate_title(html):
         return True
     else:
         raise Exception
+
+
+def read_json(file_path):
+    data = json.load(file_path)
+    return data

@@ -9,7 +9,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
-from src.parse import (get_page_content, validate_title)  # noqa
+from src.parse import (get_page_content, validate_title, read_json)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -46,6 +46,23 @@ class TestsGetPage(unittest.TestCase):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
         self.assertTrue(actual)
+
+
+class TestsFileOperations(unittest.TestCase):
+    @patch('json.load')
+    def test_read_json_filepath_passed_to_json_load(self,
+                                                    mock_json_load):
+        file_path = 'some path'
+        read_json(file_path)
+        mock_json_load.assert_called_with(file_path)
+
+    @patch('json.load')
+    def test_read_json_data_from_file_is_returned(self,
+                                                  mock_json_load):
+        file_path = 'some_path'
+        expected_json = {'id': 1}
+        mock_json_load.return_value = expected_json
+        self.assertEqual(read_json(file_path), expected_json)
 
 
 if __name__ == '__main__':
