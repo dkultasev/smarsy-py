@@ -1,10 +1,15 @@
-import pathmagic  # noqa
-
 from unittest.mock import patch
-from src.parse import (get_page_content, validate_title)
 
 import unittest
 import requests
+import subprocess
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# excluding following line for linter as it complains that
+# from import is supposed to be at the top of the file
+from src.parse import (get_page_content, validate_title) # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -39,3 +44,8 @@ class TestsGetPage(unittest.TestCase):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
         self.assertTrue(actual)
+
+
+if __name__ == '__main__':
+    if '--unittest' in sys.argv:
+        subprocess.call([sys.executable, '-m', 'unittest', 'discover'])
