@@ -24,7 +24,7 @@ class TestsGetPage(unittest.TestCase):
         mock_request.return_value.status_code = 200
         exepted_url = 'https://smarsy.ua/'
         get_page_content(exepted_url)
-        mock_request.assert_called_with(exepted_url)
+        mock_request.assert_called_with('')
 
     @patch('requests.get')
     def test_response_status_code_ok(self, mock_response):
