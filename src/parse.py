@@ -22,3 +22,8 @@ def validate_title(html):
 def read_json(file_path):
     data = json.load(file_path)
     return data
+
+
+def get_login():
+    login = read_json('../cfg/login.json')
+    return login
