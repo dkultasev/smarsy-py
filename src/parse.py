@@ -20,7 +20,8 @@ def validate_title(html):
 
 
 def read_json(file_path):
-    data = json.load(file_path)
+    with open(file_path, 'r') as file_path:
+        data = json.load(file_path)
     return data
 
 
