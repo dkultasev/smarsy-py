@@ -1,4 +1,4 @@
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, MagicMock
 
 import unittest
 import requests
@@ -10,8 +10,8 @@ import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
-from src.parse import (get_page_content, validate_title, read_json,
-                       get_user_credentials, open_user_credentials_file,
+from src.parse import (get_page_content, validate_title,
+                       get_user_credentials,
                        open_json_file)  # noqa
 
 
@@ -52,23 +52,7 @@ class TestsGetPage(unittest.TestCase):
 
 
 class TestsFileOperations(unittest.TestCase):
-
-    @patch('json.load')
-    def test_read_json_filepath_passed_to_json_load(self,
-                                                    mock_json_load):
-        file_path = 'some path'
-        read_json(file_path)
-        mock_json_load.assert_called_with(file_path)
-
-    @patch('json.load')
-    def test_read_json_data_from_file_is_returned(self,
-                                                  mock_json_load):
-        file_path = 'some_path'
-        expected_json = {'id': 1}
-        mock_json_load.return_value = expected_json
-        self.assertEqual(read_json(file_path), expected_json)
-
-    @patch('json.load')
+    @patch('src.parse.open_json_file')
     def test_user_credentials_object_is_the_same_like_in_file(self,
                                                               mock_json_load):
         expected = {
@@ -80,7 +64,7 @@ class TestsFileOperations(unittest.TestCase):
         actual = get_user_credentials()
         self.assertEqual(actual, expected)
 
-    @patch('json.load')
+    @patch('src.parse.open_json_file')
     def test_user_credentials_fails_if_there_is_no_user(self,
                                                         mock_json_load):
         creds = {
@@ -95,7 +79,7 @@ class TestsFileOperations(unittest.TestCase):
             'Credentials are in the wrong format (username is missing)',
             str(ue.exception))
 
-    @patch('json.load')
+    @patch('src.parse.open_json_file')
     def test_user_credentials_fails_if_there_is_no_language(self,
                                                             mock_json_load):
         creds = {
@@ -110,7 +94,7 @@ class TestsFileOperations(unittest.TestCase):
             'Credentials are in the wrong format (language is missing)',
             str(ue.exception))
 
-    @patch('json.load')
+    @patch('src.parse.open_json_file')
     def test_user_credentials_fails_if_there_is_no_password(self,
                                                             mock_json_load):
         creds = {
@@ -125,13 +109,32 @@ class TestsFileOperations(unittest.TestCase):
             'Credentials are in the wrong format (password is missing)',
             str(ue.exception))
 
-    def test_loading_json_from_file(self):
-        # test valid JSON
+    @patch('builtins.open')
+    @patch('json.load')
+    def test_json_load_gets_content_from_provided_file(self,
+                                                       stream_mock, 
+                                                       mock_json_load):
+        expected = 'some_path_to_file'
+        stream_mock = MagicMock()
+        stream_mock.__enter__.Name = MagicMock(get=MagicMock(Name=expected))
+        open_json_file(expected)
+        mock_json_load.assert_called_with(expected)
+
+    def test_open_json_file_returns_object_from_provided_file(self):
         read_data = mock_open(read_data=json.dumps({'a': 1, 'b': 2, 'c': 3}))
         with patch('builtins.open', read_data):
             result = open_json_file('filename')
         self.assertEqual({'a': 1, 'b': 2, 'c': 3}, result)
-        # test invalid JSON
+
+    def test_open_json_file_raise_expected_exception_with_non_existing_path(self):
+        # test file does not exist
+        with self.assertRaises(IOError) as context:
+            open_json_file('null')
+        self.assertEqual(
+            'null does not exist.', str(context.exception))
+
+    def test_open_json_file_raise_expected_exception_when_invalid_json_in_file(self):
+        # test file does not exist
         read_data = mock_open(read_data='')
         with patch("builtins.open", read_data):
             with self.assertRaises(ValueError) as context:
@@ -139,12 +142,6 @@ class TestsFileOperations(unittest.TestCase):
             self.assertEqual(
                 'filename is not valid JSON.', str(context.exception))
 
-    def test_open_right_json_file(self):
-        # test file does not exist
-        with self.assertRaises(IOError) as context:
-            open_user_credentials_file('null')
-        self.assertEqual(
-            'null does not exist.', str(context.exception))
 
 if __name__ == '__main__':
     if '--unittest' in sys.argv:
