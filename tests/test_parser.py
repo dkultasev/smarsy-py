@@ -11,7 +11,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
 from src.parse import (get_page_content, validate_title, read_json,
-                       get_user_credentials, open_user_credentials_file)  # noqa
+                       get_user_credentials, open_user_credentials_file,
+                       open_json_file)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -124,25 +125,26 @@ class TestsFileOperations(unittest.TestCase):
             'Credentials are in the wrong format (password is missing)',
             str(ue.exception))
 
-    def test_open_json_file(self):
+    def test_loading_json_from_file(self):
         # test valid JSON
         read_data = mock_open(read_data=json.dumps({'a': 1, 'b': 2, 'c': 3}))
         with patch('builtins.open', read_data):
-            result = open_user_credentials_file('filename')
+            result = open_json_file('filename')
         self.assertEqual({'a': 1, 'b': 2, 'c': 3}, result)
         # test invalid JSON
         read_data = mock_open(read_data='')
         with patch("builtins.open", read_data):
             with self.assertRaises(ValueError) as context:
-                open_user_credentials_file('filename')
+                open_json_file('filename')
             self.assertEqual(
                 'filename is not valid JSON.', str(context.exception))
+
+    def test_open_right_json_file(self):
         # test file does not exist
         with self.assertRaises(IOError) as context:
             open_user_credentials_file('null')
         self.assertEqual(
             'null does not exist.', str(context.exception))
-
 
 if __name__ == '__main__':
     if '--unittest' in sys.argv:

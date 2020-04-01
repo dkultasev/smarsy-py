@@ -27,12 +27,17 @@ def read_json(file_path):
 def open_user_credentials_file(filename):
     try:
         with open(filename, 'r') as f:
-            try:
-                return json.load(f)
-            except ValueError:
-                raise ValueError('{} is not valid JSON.'.format(filename))
+            return json.load(f)
     except IOError:
         raise IOError('{} does not exist.'.format(filename))
+
+
+def open_json_file(filename):
+    try:
+        with open(filename) as f:
+            return json.load(f)
+    except ValueError:
+        raise ValueError('{} is not valid JSON.'.format(filename))
 
 
 def get_user_credentials():
