@@ -24,6 +24,13 @@ def read_json(file_path):
     return data
 
 
-def get_login():
+def get_user_credentials():
     login = read_json('../cfg/login.json')
+    em = 'Credentials are in the wrong format ({} is missing)'
+    if 'language' not in login.keys():
+        raise Exception(em.format('language'))
+    if 'username' not in login.keys():
+        raise Exception(em.format('username'))
+    if 'password' not in login.keys():
+        raise Exception(em.format('password'))
     return login

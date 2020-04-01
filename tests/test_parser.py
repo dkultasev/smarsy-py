@@ -9,7 +9,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
-from src.parse import (get_page_content, validate_title, read_json, get_login)  # noqa
+from src.parse import (get_page_content, validate_title, read_json, get_user_credentials)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -49,6 +49,7 @@ class TestsGetPage(unittest.TestCase):
 
 
 class TestsFileOperations(unittest.TestCase):
+
     @patch('json.load')
     def test_read_json_filepath_passed_to_json_load(self,
                                                     mock_json_load):
@@ -65,16 +66,61 @@ class TestsFileOperations(unittest.TestCase):
         self.assertEqual(read_json(file_path), expected_json)
 
     @patch('json.load')
-    def test_get_login_returns_valid_object(self,
-                                            mock_json_load):
+    def test_user_credentials_object_is_the_same_like_in_file(self,
+                                                              mock_json_load):
         expected = {
             'language': 'UA',
             'username': 'user',
             'password': 'pass'
         }
         mock_json_load.return_value = expected
-        actual = get_login()
+        actual = get_user_credentials()
         self.assertEqual(actual, expected)
+
+    @patch('json.load')
+    def test_user_credentials_fails_if_there_is_no_user(self,
+                                                        mock_json_load):
+        creds = {
+            'language': 'UA',
+            'notuser': 'user',
+            'password': 'pass'
+        }
+        mock_json_load.return_value = creds
+        with self.assertRaises(Exception) as ue:
+            get_user_credentials()
+        self.assertEqual(
+            'Credentials are in the wrong format (username is missing)',
+            str(ue.exception))
+
+    @patch('json.load')
+    def test_user_credentials_fails_if_there_is_no_language(self,
+                                                            mock_json_load):
+        creds = {
+            'nolanguage': 'UA',
+            'username': 'user',
+            'password': 'pass'
+        }
+        mock_json_load.return_value = creds
+        with self.assertRaises(Exception) as ue:
+            get_user_credentials()
+        self.assertEqual(
+            'Credentials are in the wrong format (language is missing)',
+            str(ue.exception))
+
+    @patch('json.load')
+    def test_user_credentials_fails_if_there_is_no_password(self,
+                                                            mock_json_load):
+        creds = {
+            'language': 'UA',
+            'username': 'user',
+            'nopassword': 'pass'
+        }
+        mock_json_load.return_value = creds
+        with self.assertRaises(Exception) as ue:
+            get_user_credentials()
+        self.assertEqual(
+            'Credentials are in the wrong format (password is missing)', 
+            str(ue.exception))
 
 
 if __name__ == '__main__':
