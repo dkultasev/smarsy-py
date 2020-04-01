@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import os
 
 
 def get_page_content(url):
@@ -21,7 +22,9 @@ def validate_title(html):
 
 def open_json_file(filename):
     try:
-        with open(filename) as f:
+        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                               '..', 'cfg'))
+        with open(os.path.join(basedir, filename)) as f:
             return json.load(f)
     except IOError:
         raise IOError('{} does not exist.'.format(filename))
@@ -30,12 +33,10 @@ def open_json_file(filename):
 
 
 def get_user_credentials():
-    login = open_json_file('../cfg/login.json')
+    login = open_json_file('login.json')
     em = 'Credentials are in the wrong format ({} is missing)'
-    if 'language' not in login.keys():
-        raise Exception(em.format('language'))
-    if 'username' not in login.keys():
-        raise Exception(em.format('username'))
-    if 'password' not in login.keys():
-        raise Exception(em.format('password'))
+    for key in ('language', 'username', 'password'):
+        if key in login.keys():
+            continue
+        raise Exception(em.format(key))
     return login
