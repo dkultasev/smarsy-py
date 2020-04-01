@@ -22,9 +22,7 @@ def validate_title(html):
 
 def open_json_file(filename):
     try:
-        basedir = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                               '..', 'cfg'))
-        with open(os.path.join(basedir, filename)) as f:
+        with open(filename) as f:
             return json.load(f)
     except IOError:
         raise IOError('{} does not exist.'.format(filename))
@@ -33,7 +31,10 @@ def open_json_file(filename):
 
 
 def get_user_credentials():
-    login = open_json_file('login.json')
+    file = 'login.json'
+    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..', 'cfg', file))
+    login = open_json_file(file_path)
     em = 'Credentials are in the wrong format ({} is missing)'
     for key in ('language', 'username', 'password'):
         if key in login.keys():

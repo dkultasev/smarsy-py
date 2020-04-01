@@ -112,7 +112,7 @@ class TestsFileOperations(unittest.TestCase):
     @patch('builtins.open')
     @patch('json.load')
     def test_json_load_gets_content_from_provided_file(self,
-                                                       stream_mock, 
+                                                       stream_mock,
                                                        mock_json_load):
         expected = 'some_path_to_file'
         stream_mock = MagicMock()
