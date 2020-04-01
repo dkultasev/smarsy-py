@@ -20,9 +20,19 @@ def validate_title(html):
 
 
 def read_json(file_path):
-    with open(file_path, 'r') as file_path:
-        data = json.load(file_path)
+    data = json.load(file_path)
     return data
+
+
+def open_user_credentials_file(filename):
+    try:
+        with open(filename, 'r') as f:
+            try:
+                return json.load(f)
+            except ValueError:
+                raise ValueError('{} is not valid JSON.'.format(filename))
+    except IOError:
+        raise IOError('{} does not exist.'.format(filename))
 
 
 def get_user_credentials():

@@ -3,3 +3,4 @@
 .pytest_cache
 myvenv/
 *.pyc
+src/tempCodeRunnerFile.py
