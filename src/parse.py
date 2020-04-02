@@ -31,9 +31,8 @@ def open_json_file(filename):
 
 
 def get_user_credentials():
-    file = 'login.json'
     file_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                             '..', 'cfg', file))
+                                             '..', 'cfg', 'login.json'))
     login = open_json_file(file_path)
     em = 'Credentials are in the wrong format ({} is missing)'
     for key in ('language', 'username', 'password'):
