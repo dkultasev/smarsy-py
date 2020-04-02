@@ -33,13 +33,11 @@ def open_json_file(filename):
 def validate_object_keys(keys, test_json):
     try:
         assert isinstance(keys, (list, tuple))
-        found_keys_list = []
         for key in keys:
             if key in test_json.keys():
-                found_keys_list.append(key)
                 continue
             raise Exception('Key is missing')
-        return found_keys_list
+        return True
     except AssertionError:
         raise AssertionError('Keys must be tuple or list.')
 

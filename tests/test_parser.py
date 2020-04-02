@@ -170,8 +170,7 @@ class TestsFileOperations(unittest.TestCase):
             'username': 'user',
             'password': 'pass'
         }
-        expected_keys = list(keys_list)
-        self.assertEqual(validate_object_keys(keys_list, creds), expected_keys)
+        self.assertTrue(validate_object_keys(keys_list, creds))
 
     def test_validate_object_keys_raise_exception_with_wrong_key(self):
         keys_list = ('language', 'username', 'password')
