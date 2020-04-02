@@ -158,14 +158,14 @@ class TestsFileOperations(unittest.TestCase):
             result = open_json_file('filename')
         self.assertEqual({'a': 1, 'b': 2, 'c': 3}, result)
 
-    def test_open_json_file_raise_expected_exception_with_non_existing_path(self):
+    def test_open_json_file_raise_exception_with_non_existing_path(self):
         # test file does not exist
         with self.assertRaises(IOError) as context:
             open_json_file('null')
         self.assertEqual(
             'null does not exist.', str(context.exception))
 
-    def test_open_json_file_raise_expected_exception_when_invalid_json_in_file(self):
+    def test_open_json_file_raise_exception_when_invalid_json_in_file(self):
         # test file does not exist
         read_data = mock_open(read_data='')
         with patch("builtins.open", read_data):
