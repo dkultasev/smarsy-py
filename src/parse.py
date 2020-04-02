@@ -30,6 +30,17 @@ def open_json_file(filename):
         raise ValueError('{} is not valid JSON.'.format(filename))
 
 
+def validate_object_keys(keys, json):
+    try:
+        assert isinstance(keys, (list, tuple))
+        for key in keys:
+            if key in json.keys():
+                continue
+            raise Exception('Key is missing')
+    except AssertionError:
+        raise AssertionError('Keys must be tuple or list.')
+
+
 def get_user_credentials():
     file_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..', 'cfg', 'login.json'))

@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # from import is supposed to be at the top of the file
 from src.parse import (get_page_content, validate_title,
                        get_user_credentials,
-                       open_json_file)  # noqa
+                       open_json_file, validate_object_keys)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -141,6 +141,29 @@ class TestsFileOperations(unittest.TestCase):
                 open_json_file('filename')
             self.assertEqual(
                 'filename is not valid JSON.', str(context.exception))
+
+    def test_validate_object_keys_raise_exception_with_wrong_keys_format(self):
+        keys_list = ('languageusername')
+        json_file = {
+                    'language': 'UA',
+                    'username': 'user',
+                    'password': 'pass'
+                }
+        with self.assertRaises(AssertionError) as err:
+            validate_object_keys(keys_list, json_file)
+        self.assertEqual(
+                'Keys must be tuple or list.', str(err.exception))
+
+    def test_validate_object_keys_raise_exception_with_wrong_key(self):
+        keys_list = ('language', 'username', 'password')
+        creds = {
+            'language': 'UA',
+            'username': 'user',
+            'nopassword': 'pass'
+        }
+        with self.assertRaises(Exception) as ke:
+            validate_object_keys(keys_list, creds)
+        self.assertEqual('Key is missing', str(ke.exception))
 
 
 if __name__ == '__main__':
