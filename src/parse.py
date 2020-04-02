@@ -4,8 +4,16 @@ import json
 import os
 
 
-def get_page_content(url):
+def perform_get_request(url):
     r = requests.get(url)
+    if r.status_code == 200:
+        return r.text
+    else:
+        raise requests.HTTPError("Error code - {}".format(r.status_code))
+
+
+def perform_post_request(url):
+    r = requests.post(url)
     if r.status_code == 200:
         return r.text
     else:

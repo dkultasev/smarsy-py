@@ -10,9 +10,10 @@ import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
-from src.parse import (get_page_content, validate_title,
+from src.parse import (perform_get_request, validate_title,
                        get_user_credentials,
-                       open_json_file)  # noqa
+                       open_json_file,
+                       perform_post_request)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -23,32 +24,63 @@ class TestsGetPage(unittest.TestCase):
         pass
 
     @patch('requests.get')
-    def test_right_url_is_passed_to_reponse_get_is(self, mock_request):
+    def test_perform_get_request_uses_provided_url_for_request(
+            self,
+            mock_request):
         mock_request.return_value.status_code = 200
         exepted_url = 'https://smarsy.ua/'
-        get_page_content(exepted_url)
+        perform_get_request(exepted_url)
         mock_request.assert_called_with(exepted_url)
 
     @patch('requests.get')
-    def test_response_with_status_200_returns_expected_text(self,
-                                                            mock_response):
+    def test_perform_get_request_returns_expected_text_on_valid_request(
+            self,
+            mock_response):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 200
         expected_text = 'This is login Page'
         mock_response(url).text = expected_text
-        self.assertEqual(get_page_content(url), expected_text)
+        self.assertEqual(perform_get_request(url), expected_text)
 
     @patch('requests.get')
-    def test_response_with_status_code_404_raises_exception(self,
-                                                            mock_response):
+    def test_perform_get_requestresponse_with_status_code_404_raises_exception(
+            self,
+            mock_response):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, get_page_content, url)
+        self.assertRaises(requests.HTTPError, perform_get_request, url)
 
     def test_login_page_has_expected_title(self):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
         self.assertTrue(actual)
+
+    @patch('requests.post')
+    def test_perform_post_request_uses_provided_url_for_request(
+            self,
+            mock_request):
+        mock_request.return_value.status_code = 200
+        exepted_url = 'https://smarsy.ua/'
+        perform_post_request(exepted_url)
+        mock_request.assert_called_with(exepted_url)
+
+    @patch('requests.post')
+    def test_perform_post_request_returns_expected_text_on_valid_request(
+            self,
+            mock_response):
+        url = 'https://smarsy.ua/'
+        mock_response.return_value.status_code = 200
+        expected_text = 'This is login Page'
+        mock_response(url).text = expected_text
+        self.assertEqual(perform_post_request(url), expected_text)
+
+    @patch('requests.post')
+    def test_perform_post_request_resp_with_status_code_404_raises_exception(
+            self,
+            mock_response):
+        url = 'https://smarsy.ua/'
+        mock_response.return_value.status_code = 404
+        self.assertRaises(requests.HTTPError, perform_post_request, url)
 
 
 class TestsFileOperations(unittest.TestCase):
