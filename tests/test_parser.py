@@ -1,4 +1,4 @@
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import patch, mock_open, MagicMock, Mock
 
 import unittest
 import requests
@@ -55,32 +55,38 @@ class TestsGetPage(unittest.TestCase):
         actual = validate_title(html)
         self.assertTrue(actual)
 
-    @patch('requests.post')
     def test_perform_post_request_uses_provided_url_for_request(
-            self,
-            mock_request):
-        mock_request.return_value.status_code = 200
+            self):
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(status_code=200)
+            )
+        )
         exepted_url = 'https://smarsy.ua/'
-        perform_post_request(exepted_url)
-        mock_request.assert_called_with(exepted_url)
+        perform_post_request(session, exepted_url)
+        session.post.assert_called_with(exepted_url)
 
     @patch('requests.post')
     def test_perform_post_request_returns_expected_text_on_valid_request(
             self,
             mock_response):
-        url = 'https://smarsy.ua/'
-        mock_response.return_value.status_code = 200
-        expected_text = 'This is login Page'
-        mock_response(url).text = expected_text
-        self.assertEqual(perform_post_request(url), expected_text)
+        expected_text = 'some_text'
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(text=expected_text, status_code=200)
+            )
+        )
+        self.assertEqual(perform_post_request(session, 'url'), expected_text)
 
-    @patch('requests.post')
     def test_perform_post_request_resp_with_status_code_404_raises_exception(
-            self,
-            mock_response):
-        url = 'https://smarsy.ua/'
-        mock_response.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, perform_post_request, url)
+            self):
+        expected_text = 'some_text'
+        s = Mock(
+            post=MagicMock(
+                return_value=Mock(text=expected_text, status_code=404)
+            )
+        )
+        self.assertRaises(requests.HTTPError, perform_post_request, s, 'url')
 
 
 class TestsFileOperations(unittest.TestCase):

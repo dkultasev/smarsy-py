@@ -12,8 +12,8 @@ def perform_get_request(url):
         raise requests.HTTPError("Error code - {}".format(r.status_code))
 
 
-def perform_post_request(url):
-    r = requests.post(url)
+def perform_post_request(session, url, data=None):
+    r = session.post(url)
     if r.status_code == 200:
         return r.text
     else:
