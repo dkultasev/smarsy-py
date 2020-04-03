@@ -13,6 +13,16 @@ def perform_get_request(url):
 
 
 def perform_post_request(session, url, data=None, headers=None):
+    """
+    Performs post request.
+
+    :param session: Request session 
+    :param url: URL for Request object
+    :param data: (optional) Dictionary, list of tuples, bytes, or file-like object to send in the body of the Request
+    :param headers: (optional) HTTP headers
+    :returns: Response text
+    :raises HTTPError: raises on reponse status code <> 200
+    """
     r = session.post(url=url, data=data, headers=headers)
     if r.status_code == 200:
         return r.text
