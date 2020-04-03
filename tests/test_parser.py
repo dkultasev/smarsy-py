@@ -64,12 +64,11 @@ class TestsGetPage(unittest.TestCase):
         )
         exepted_url = 'https://smarsy.ua/'
         perform_post_request(session, exepted_url)
-        session.post.assert_called_with(exepted_url)
+        session.post.assert_called_with(
+            url=exepted_url, data=None, headers=None)
 
-    @patch('requests.post')
     def test_perform_post_request_returns_expected_text_on_valid_request(
-            self,
-            mock_response):
+            self):
         expected_text = 'some_text'
         session = Mock(
             post=MagicMock(
@@ -77,6 +76,38 @@ class TestsGetPage(unittest.TestCase):
             )
         )
         self.assertEqual(perform_post_request(session, 'url'), expected_text)
+
+    def test_perform_post_request_uses_provided_data_for_post_request(
+            self):
+        expected_data = 'data'
+        expected_url = 'url'
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(status_code=200,
+                                  data=expected_data,
+                                  text=expected_url)
+            )
+        )
+        perform_post_request(session, expected_url, data=expected_data)
+        session.post.assert_called_with(url=expected_url,
+                                        data=expected_data,
+                                        headers=None)
+
+    def test_perform_post_request_uses_provided_headers_for_post_request(
+            self):
+        expected_headers = {"a": 1}
+        expected_url = 'url'
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(status_code=200,
+                                  data=None,
+                                  text=expected_url,
+                                  headers=expected_headers)
+            )
+        )
+        perform_post_request(session, expected_url, headers=expected_headers)
+        session.post.assert_called_with(
+            url=expected_url, data=None, headers=expected_headers)
 
     def test_perform_post_request_resp_with_status_code_404_raises_exception(
             self):
