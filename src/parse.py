@@ -71,3 +71,24 @@ def get_user_credentials():
             continue
         raise Exception(em.format(key))
     return login
+
+
+def get_headers():
+    """
+    Headers for HTTP request.
+
+    :returns: Headers for HTTP request
+    """
+    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..', 'cfg', 'headers.json'))
+    return open_json_file(file_path)
+
+
+def login():
+    """
+    Perform login to Smarsy.
+
+    :returns: true on succesful login
+    """
+    headers = get_headers()
+    a = 0

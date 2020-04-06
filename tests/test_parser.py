@@ -14,7 +14,9 @@ from src.parse import (perform_get_request, validate_title,
                        get_user_credentials,
                        open_json_file,
                        perform_post_request,
-                       validate_object_keys)  # noqa
+                       validate_object_keys,
+                       get_headers,
+                       login)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -215,23 +217,23 @@ class TestsFileOperations(unittest.TestCase):
     def test_right_keys_format(self):
         keys_list = ('language', 'username', 'password')
         json = {
-                    'language': 'UA',
-                    'username': 'user',
-                    'password': 'pass'
-                }
+            'language': 'UA',
+            'username': 'user',
+            'password': 'pass'
+        }
         self.assertTrue(validate_object_keys(keys_list, json))
 
     def test_validate_object_keys_raise_exception_with_wrong_keys_format(self):
         keys_list = ('languageusername')
         json_file = {
-                    'language': 'UA',
-                    'username': 'user',
-                    'password': 'pass'
-                }
+            'language': 'UA',
+            'username': 'user',
+            'password': 'pass'
+        }
         with self.assertRaises(AssertionError) as err:
             validate_object_keys(keys_list, json_file)
         self.assertEqual(
-                'Keys must be tuple or list.', str(err.exception))
+            'Keys must be tuple or list.', str(err.exception))
 
     def test_validate_object_keys_all_keys_excists(self):
         keys_list = ('language', 'username', 'password')
@@ -252,6 +254,26 @@ class TestsFileOperations(unittest.TestCase):
         with self.assertRaises(Exception) as ke:
             validate_object_keys(keys_list, creds)
         self.assertEqual('Key is missing', str(ke.exception))
+
+    @patch('src.parse.open_json_file')
+    def test_user_headers_object_is_the_same_like_in_file(self,
+                                                          mock_json_load):
+        expected = {
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive'
+        }
+        mock_json_load.return_value = expected
+        actual = get_headers()
+        self.assertEqual(actual, expected)
+
+
+@patch('src.parse.get_user_credentials')
+@patch('src.parse.get_headers')
+class TestsParse(unittest.TestCase):
+
+    def test_login_gets_credentials(self, mock_headers, user_credentials):
+        login()
+        self.assertTrue(mock_headers.called)
 
 
 if __name__ == '__main__':
