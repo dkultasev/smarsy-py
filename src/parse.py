@@ -1,3 +1,4 @@
+from typing import Union, Tuple, List
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -47,6 +48,17 @@ def open_json_file(filename):
         raise IOError('{} does not exist.'.format(filename))
     except ValueError:
         raise ValueError('{} is not valid JSON.'.format(filename))
+
+
+def validate_object_keys(keys: Union[Tuple[str], List[str]], test_json):
+    if len(keys):
+        for key in keys:
+            if key in test_json.keys():
+                continue
+            raise Exception('Key is missing')
+        return True
+    else:
+        raise Exception('Key is empty')
 
 
 def get_user_credentials():

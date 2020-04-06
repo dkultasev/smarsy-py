@@ -12,8 +12,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # from import is supposed to be at the top of the file
 from src.parse import (perform_get_request, validate_title,
                        get_user_credentials,
-                       open_json_file,
-                       perform_post_request)  # noqa
+                       open_json_file, validate_object_keys,
+                       perform_post_request)
 
 
 class TestsGetPage(unittest.TestCase):
@@ -210,6 +210,37 @@ class TestsFileOperations(unittest.TestCase):
                 open_json_file('filename')
             self.assertEqual(
                 'filename is not valid JSON.', str(context.exception))
+
+    def test_validate_object_keys_all_keys_exists(self):
+        keys_list = ('language', 'username', 'password')
+        creds = {
+            'language': 'UA',
+            'username': 'user',
+            'password': 'pass'
+        }
+        self.assertTrue(validate_object_keys(keys_list, creds))
+
+    def test_validate_object_keys_raise_exception_with_wrong_key(self):
+        keys_list = ('language', 'username', 'password')
+        creds = {
+            'language': 'UA',
+            'username': 'user',
+            'nopassword': 'pass'
+        }
+        with self.assertRaises(Exception) as ke:
+            validate_object_keys(keys_list, creds)
+        self.assertEqual('Key is missing', str(ke.exception))
+
+    def test_if_empty_keys_raise_exception_with_empty_key(self):
+        keys_list = ()
+        creds = {
+            'language': 'UA',
+            'username': 'user',
+            'nopassword': 'pass'
+        }
+        with self.assertRaises(Exception) as ke:
+            validate_object_keys(keys_list, creds)
+        self.assertEqual('Key is empty', str(ke.exception))
 
 
 if __name__ == '__main__':
