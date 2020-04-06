@@ -51,11 +51,14 @@ def open_json_file(filename):
 
 
 def validate_object_keys(keys: Union[Tuple[str], List[str]], test_json):
-    for key in keys:
-        if key in test_json.keys():
-            continue
+    if len(keys):
+        for key in keys:
+            if key in test_json.keys():
+                continue
+            raise Exception('Key is missing')
+        return True
+    else:
         raise Exception('Key is missing')
-    return True
 
 
 def get_user_credentials():
