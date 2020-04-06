@@ -58,7 +58,7 @@ def validate_object_keys(keys: Union[Tuple[str], List[str]], test_json):
             raise Exception('Key is missing')
         return True
     else:
-        raise Exception('Key is missing')
+        raise Exception('Key is empty')
 
 
 def get_user_credentials():

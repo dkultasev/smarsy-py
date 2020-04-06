@@ -231,6 +231,17 @@ class TestsFileOperations(unittest.TestCase):
             validate_object_keys(keys_list, creds)
         self.assertEqual('Key is missing', str(ke.exception))
 
+    def test_if_empty_keys_raise_exception_with_empty_key(self):
+        keys_list = ()
+        creds = {
+            'language': 'UA',
+            'username': 'user',
+            'nopassword': 'pass'
+        }
+        with self.assertRaises(Exception) as ke:
+            validate_object_keys(keys_list, creds)
+        self.assertEqual('Key is empty', str(ke.exception))
+
 
 if __name__ == '__main__':
     if '--unittest' in sys.argv:
