@@ -142,27 +142,6 @@ class TestsFileOperations(unittest.TestCase):
             self.assertEqual(
                 'filename is not valid JSON.', str(context.exception))
 
-    def test_right_keys_format(self):
-        keys_list = ('language', 'username', 'password')
-        json = {
-                    'language': 'UA',
-                    'username': 'user',
-                    'password': 'pass'
-                }
-        self.assertTrue(validate_object_keys(keys_list, json))
-
-    def test_validate_object_keys_raise_exception_with_wrong_keys_format(self):
-        keys_list = ('languageusername')
-        json_file = {
-                    'language': 'UA',
-                    'username': 'user',
-                    'password': 'pass'
-                }
-        with self.assertRaises(AssertionError) as err:
-            validate_object_keys(keys_list, json_file)
-        self.assertEqual(
-                'Keys must be tuple or list.', str(err.exception))
-
     def test_validate_object_keys_all_keys_excists(self):
         keys_list = ('language', 'username', 'password')
         creds = {
