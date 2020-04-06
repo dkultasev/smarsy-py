@@ -211,7 +211,7 @@ class TestsFileOperations(unittest.TestCase):
             self.assertEqual(
                 'filename is not valid JSON.', str(context.exception))
 
-    def test_validate_object_keys_all_keys_excists(self):
+    def test_validate_object_keys_all_keys_exists(self):
         keys_list = ('language', 'username', 'password')
         creds = {
             'language': 'UA',
