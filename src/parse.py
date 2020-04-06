@@ -1,3 +1,4 @@
+from typing import Union, Tuple, List
 from bs4 import BeautifulSoup
 from enum import Enum
 import requests
@@ -54,16 +55,15 @@ def open_json_file(filename):
         raise ValueError('{} is not valid JSON.'.format(filename))
 
 
-def validate_object_keys(keys, test_json):
-    try:
-        assert isinstance(keys, (list, tuple))
+def validate_object_keys(keys: Union[Tuple[str], List[str]], test_json):
+    if len(keys):
         for key in keys:
             if key in test_json.keys():
                 continue
             raise Exception('Key is missing')
         return True
-    except AssertionError:
-        raise AssertionError('Keys must be tuple or list.')
+    else:
+        raise Exception('Key is empty')
 
 
 def get_user_credentials():
