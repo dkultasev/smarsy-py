@@ -14,7 +14,7 @@ from src.parse import (perform_get_request, validate_title,
                        get_user_credentials,
                        open_json_file,
                        perform_post_request,
-                       open_json_file, validate_object_keys)  # noqa
+                       validate_object_keys)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
