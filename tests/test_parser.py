@@ -275,16 +275,14 @@ class TestsParse(unittest.TestCase):
     def test_login_gets_headers(self,
                                 mock_headers,
                                 user_credentials,
-                                mock_request
-                                ):
+                                mock_request):
         login()
         self.assertTrue(mock_headers.called)
 
     def test_login_gets_credentials(self,
                                     mock_headers,
                                     user_credentials,
-                                    mock_request
-                                    ):
+                                    mock_request):
         login()
         self.assertTrue(user_credentials.called)
 
@@ -293,10 +291,10 @@ class TestsParse(unittest.TestCase):
                                               mock_session,
                                               mock_headers,
                                               user_credentials,
-                                              mock_request
-                                              ):
+                                              mock_request):
         login()
-        mock_request.assert_called_with(mock_session.return_value, Urls.LOGIN.value,
+        mock_request.assert_called_with(mock_session.return_value,
+                                        Urls.LOGIN.value,
                                         user_credentials.return_value,
                                         mock_headers.return_value)
 
@@ -305,8 +303,7 @@ class TestsParse(unittest.TestCase):
                                              mock_session,
                                              mock_headers,
                                              user_credentials,
-                                             mock_request
-                                             ):
+                                             mock_request):
         self.assertEqual(login(), 'Smarsy Login')
 
 
