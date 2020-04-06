@@ -1,4 +1,4 @@
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import patch, mock_open, MagicMock, Mock
 
 import unittest
 import requests
@@ -10,9 +10,10 @@ import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
-from src.parse import (get_page_content, validate_title,
+from src.parse import (perform_get_request, validate_title,
                        get_user_credentials,
-                       open_json_file, validate_object_keys)  # noqa
+                       open_json_file, validate_object_keys,
+                       perform_post_request)
 
 
 class TestsGetPage(unittest.TestCase):
@@ -23,32 +24,100 @@ class TestsGetPage(unittest.TestCase):
         pass
 
     @patch('requests.get')
-    def test_right_url_is_passed_to_reponse_get_is(self, mock_request):
+    def test_perform_get_request_uses_provided_url_for_request(
+            self,
+            mock_request):
         mock_request.return_value.status_code = 200
         exepted_url = 'https://smarsy.ua/'
-        get_page_content(exepted_url)
+        perform_get_request(exepted_url)
         mock_request.assert_called_with(exepted_url)
 
     @patch('requests.get')
-    def test_response_with_status_200_returns_expected_text(self,
-                                                            mock_response):
+    def test_perform_get_request_returns_expected_text_on_valid_request(
+            self,
+            mock_response):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 200
         expected_text = 'This is login Page'
         mock_response(url).text = expected_text
-        self.assertEqual(get_page_content(url), expected_text)
+        self.assertEqual(perform_get_request(url), expected_text)
 
     @patch('requests.get')
-    def test_response_with_status_code_404_raises_exception(self,
-                                                            mock_response):
+    def test_perform_get_requestresponse_with_status_code_404_raises_exception(
+            self,
+            mock_response):
         url = 'https://smarsy.ua/'
         mock_response.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, get_page_content, url)
+        self.assertRaises(requests.HTTPError, perform_get_request, url)
 
     def test_login_page_has_expected_title(self):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
         self.assertTrue(actual)
+
+    def test_perform_post_request_uses_provided_url_for_request(
+            self):
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(status_code=200)
+            )
+        )
+        exepted_url = 'https://smarsy.ua/'
+        perform_post_request(session, exepted_url)
+        session.post.assert_called_with(
+            url=exepted_url, data=None, headers=None)
+
+    def test_perform_post_request_returns_expected_text_on_valid_request(
+            self):
+        expected_text = 'some_text'
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(text=expected_text, status_code=200)
+            )
+        )
+        self.assertEqual(perform_post_request(session, 'url'), expected_text)
+
+    def test_perform_post_request_uses_provided_data_for_post_request(
+            self):
+        expected_data = 'data'
+        expected_url = 'url'
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(status_code=200,
+                                  data=expected_data,
+                                  text=expected_url)
+            )
+        )
+        perform_post_request(session, expected_url, data=expected_data)
+        session.post.assert_called_with(url=expected_url,
+                                        data=expected_data,
+                                        headers=None)
+
+    def test_perform_post_request_uses_provided_headers_for_post_request(
+            self):
+        expected_headers = {"a": 1}
+        expected_url = 'url'
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(status_code=200,
+                                  data=None,
+                                  text=expected_url,
+                                  headers=expected_headers)
+            )
+        )
+        perform_post_request(session, expected_url, headers=expected_headers)
+        session.post.assert_called_with(
+            url=expected_url, data=None, headers=expected_headers)
+
+    def test_perform_post_request_resp_with_status_code_404_raises_exception(
+            self):
+        expected_text = 'some_text'
+        s = Mock(
+            post=MagicMock(
+                return_value=Mock(text=expected_text, status_code=404)
+            )
+        )
+        self.assertRaises(requests.HTTPError, perform_post_request, s, 'url')
 
 
 class TestsFileOperations(unittest.TestCase):
@@ -126,14 +195,14 @@ class TestsFileOperations(unittest.TestCase):
             result = open_json_file('filename')
         self.assertEqual({'a': 1, 'b': 2, 'c': 3}, result)
 
-    def test_open_json_file_raise_expected_exception_with_non_existing_path(self):
+    def test_open_json_file_raise_exception_with_non_existing_path(self):
         # test file does not exist
         with self.assertRaises(IOError) as context:
             open_json_file('null')
         self.assertEqual(
             'null does not exist.', str(context.exception))
 
-    def test_open_json_file_raise_expected_exception_when_invalid_json_in_file(self):
+    def test_open_json_file_raise_exception_when_invalid_json_in_file(self):
         # test file does not exist
         read_data = mock_open(read_data='')
         with patch("builtins.open", read_data):
