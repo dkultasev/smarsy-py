@@ -16,7 +16,8 @@ from src.parse import (perform_get_request, validate_title,
                        perform_post_request,
                        validate_object_keys,
                        get_headers,
-                       login)  # noqa
+                       login,
+                       Urls)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -267,13 +268,46 @@ class TestsFileOperations(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
-@patch('src.parse.get_user_credentials')
-@patch('src.parse.get_headers')
+@patch('src.parse.perform_post_request', return_value='Smarsy Login')
+@patch('src.parse.get_user_credentials', return_value={'u': 'name'})
+@patch('src.parse.get_headers', return_value={'h': '123'})
 class TestsParse(unittest.TestCase):
-
-    def test_login_gets_credentials(self, mock_headers, user_credentials):
+    def test_login_gets_headers(self,
+                                mock_headers,
+                                user_credentials,
+                                mock_request
+                                ):
         login()
         self.assertTrue(mock_headers.called)
+
+    def test_login_gets_credentials(self,
+                                    mock_headers,
+                                    user_credentials,
+                                    mock_request
+                                    ):
+        login()
+        self.assertTrue(user_credentials.called)
+
+    @patch('requests.Session', return_value='session')
+    def test_login_uses_login_page_in_request(self,
+                                              mock_session,
+                                              mock_headers,
+                                              user_credentials,
+                                              mock_request
+                                              ):
+        login()
+        mock_request.assert_called_with(mock_session.return_value, Urls.LOGIN.value,
+                                        user_credentials.return_value,
+                                        mock_headers.return_value)
+
+    @patch('requests.Session', return_value='session')
+    def test_login_returns_post_request_text(self,
+                                             mock_session,
+                                             mock_headers,
+                                             user_credentials,
+                                             mock_request
+                                             ):
+        self.assertEqual(login(), 'Smarsy Login')
 
 
 if __name__ == '__main__':
