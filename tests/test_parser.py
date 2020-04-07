@@ -92,7 +92,7 @@ class TestsGetPage(unittest.TestCase):
         self.assertTrue(actual)
 
 
-class TestsPostPage(unittest.TestCase):
+class TestsPostRequest(unittest.TestCase):
 
     def test_perform_post_request_uses_provided_url_for_request(
             self):
