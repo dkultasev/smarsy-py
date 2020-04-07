@@ -31,7 +31,7 @@ class TestsGetPage(unittest.TestCase):
         exepted_url = 'https://smarsy.ua/'
         perform_get_request(session, exepted_url)
         session.get.assert_called_with(url=exepted_url,
-                                       data=None, headers=None)
+                                       params=None, headers=None)
 
     def test_perform_get_request_returns_expected_text_on_valid_request(self):
         url = 'https://smarsy.ua/'
@@ -57,17 +57,18 @@ class TestsGetPage(unittest.TestCase):
 
     def test_perform_get_request_uses_provided_data_for_get_request(
             self):
-        expected_data = 'data'
+        expected_params = 'data'
         expected_url = 'url'
         session = Mock(
             get=MagicMock(
                 return_value=Mock(status_code=200,
-                                  data=expected_data,
+                                  param=expected_params,
                                   text=expected_url)
             )
         )
-        perform_get_request(session, expected_url, data=expected_data)
-        session.get.assert_called_with(url=expected_url, data=expected_data,
+        perform_get_request(session, expected_url, params=expected_params)
+        session.get.assert_called_with(url=expected_url,
+                                       params=expected_params,
                                        headers=None)
 
     def test_perform_get_request_uses_provided_headers_for_get_request(
@@ -77,13 +78,13 @@ class TestsGetPage(unittest.TestCase):
         session = Mock(
             get=MagicMock(
                 return_value=Mock(status_code=200,
-                                  data=None,
+                                  params=None,
                                   text=expected_url,
                                   headers=expected_headers)
             )
         )
         perform_get_request(session, expected_url, headers=expected_headers)
-        session.get.assert_called_with(url=expected_url, data=None,
+        session.get.assert_called_with(url=expected_url, params=None,
                                        headers=expected_headers)
 
     def test_login_page_has_expected_title(self):
