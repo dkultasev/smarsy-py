@@ -10,7 +10,7 @@ import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
-from src.parse import (perform_get_request, validate_title,
+from smarsy.parse import (perform_get_request, validate_title,
                        get_user_credentials,
                        open_json_file,
                        perform_post_request,
@@ -125,7 +125,7 @@ class TestsGetPage(unittest.TestCase):
 
 
 class TestsFileOperations(unittest.TestCase):
-    @patch('src.parse.open_json_file')
+    @patch('smarsy.parse.open_json_file')
     def test_user_credentials_object_is_the_same_like_in_file(self,
                                                               mock_json_load):
         expected = {
@@ -137,7 +137,7 @@ class TestsFileOperations(unittest.TestCase):
         actual = get_user_credentials()
         self.assertEqual(actual, expected)
 
-    @patch('src.parse.open_json_file')
+    @patch('smarsy.parse.open_json_file')
     def test_user_credentials_fails_if_there_is_no_user(self,
                                                         mock_json_load):
         creds = {
@@ -152,7 +152,7 @@ class TestsFileOperations(unittest.TestCase):
             'Credentials are in the wrong format (username is missing)',
             str(ue.exception))
 
-    @patch('src.parse.open_json_file')
+    @patch('smarsy.parse.open_json_file')
     def test_user_credentials_fails_if_there_is_no_language(self,
                                                             mock_json_load):
         creds = {
@@ -167,7 +167,7 @@ class TestsFileOperations(unittest.TestCase):
             'Credentials are in the wrong format (language is missing)',
             str(ue.exception))
 
-    @patch('src.parse.open_json_file')
+    @patch('smarsy.parse.open_json_file')
     def test_user_credentials_fails_if_there_is_no_password(self,
                                                             mock_json_load):
         creds = {
@@ -235,7 +235,7 @@ class TestsFileOperations(unittest.TestCase):
             validate_object_keys(keys_list, creds)
         self.assertEqual('Key is missing', str(ke.exception))
 
-    @patch('src.parse.open_json_file')
+    @patch('smarsy.parse.open_json_file')
     def test_user_headers_object_is_the_same_like_in_file(self,
                                                           mock_json_load):
         expected = {
@@ -247,9 +247,9 @@ class TestsFileOperations(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
-@patch('src.parse.perform_post_request', return_value='Smarsy Login')
-@patch('src.parse.get_user_credentials', return_value={'u': 'name'})
-@patch('src.parse.get_headers', return_value={'h': '123'})
+@patch('smarsy.parse.perform_post_request', return_value='Smarsy Login')
+@patch('smarsy.parse.get_user_credentials', return_value={'u': 'name'})
+@patch('smarsy.parse.get_headers', return_value={'h': '123'})
 class TestsParse(unittest.TestCase):
     def test_login_gets_headers(self,
                                 mock_headers,
