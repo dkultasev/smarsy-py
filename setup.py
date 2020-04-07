@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="smarsy-dkultsaev",
+    name="smarsy",
     version="0.0.1",
     author="KulZu",
     author_email="dkultasev@gmail.com",
@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: MIT License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         'Development Status :: 3 - Alpha',    
         'Intended Audience :: Developers',      
