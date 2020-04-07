@@ -57,7 +57,39 @@ class TestsGetPage(unittest.TestCase):
                 return_value=Mock(status_code=404)
             )
         )
-        self.assertRaises(requests.HTTPError, perform_get_request, session, url)
+        self.assertRaises(requests.HTTPError, perform_get_request, session,
+                          url)
+
+    def test_perform_get_request_uses_provided_data_for_get_request(
+            self):
+        expected_data = 'data'
+        expected_url = 'url'
+        session = Mock(
+            get=MagicMock(
+                return_value=Mock(status_code=200,
+                                  data=expected_data,
+                                  text=expected_url)
+            )
+        )
+        perform_get_request(session, expected_url, data=expected_data)
+        session.get.assert_called_with(url=expected_url, data=expected_data,
+                                       headers=None)
+
+    def test_perform_get_request_uses_provided_headers_for_get_request(
+            self):
+        expected_headers = {"a": 1}
+        expected_url = 'url'
+        session = Mock(
+            get=MagicMock(
+                return_value=Mock(status_code=200,
+                                  data=None,
+                                  text=expected_url,
+                                  headers=expected_headers)
+            )
+        )
+        perform_get_request(session, expected_url, headers=expected_headers)
+        session.get.assert_called_with(url=expected_url, data=None,
+                                       headers=expected_headers)
 
     def test_login_page_has_expected_title(self):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
