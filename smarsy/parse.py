@@ -10,8 +10,8 @@ class Urls(Enum):
     LOGIN = 'https://smarsy.ua/login.php?jsid=Login'
 
 
-def perform_get_request(url):
-    r = requests.get(url)
+def perform_get_request(session, url, params=None, headers=None):
+    r = session.get(url=url, params=params, headers=headers)
     if r.status_code == 200:
         return r.text
     else:
