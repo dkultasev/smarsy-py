@@ -6,8 +6,6 @@ on:
       - 'feature/*'
       - 'bugfix/*'
       - 'hotfix/*'
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
