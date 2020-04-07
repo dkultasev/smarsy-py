@@ -21,11 +21,6 @@ from src.parse import (perform_get_request, validate_title,
 
 
 class TestsGetPage(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
 
     def test_perform_get_request_uses_provided_url_for_request(self):
         session = Mock(
@@ -95,6 +90,9 @@ class TestsGetPage(unittest.TestCase):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
         self.assertTrue(actual)
+
+
+class TestsPostPage(unittest.TestCase):
 
     def test_perform_post_request_uses_provided_url_for_request(
             self):
