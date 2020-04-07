@@ -5,3 +5,5 @@ myvenv/
 *.pyc
 src/tempCodeRunnerFile.py
 cfg/login.json
+dist
+*.egg-info
