@@ -38,23 +38,26 @@ class TestsGetPage(unittest.TestCase):
         session.get.assert_called_with(url=exepted_url,
                                        data=None, headers=None)
 
-    @patch('requests.get')
-    def test_perform_get_request_returns_expected_text_on_valid_request(
-            self,
-            mock_response):
+    def test_perform_get_request_returns_expected_text_on_valid_request(self):
         url = 'https://smarsy.ua/'
-        mock_response.return_value.status_code = 200
+        session = Mock(
+            get=MagicMock(
+                return_value=Mock(status_code=200)
+            )
+        )
         expected_text = 'This is login Page'
-        mock_response(url).text = expected_text
-        self.assertEqual(perform_get_request(url), expected_text)
+        session.get(url).text = expected_text
+        self.assertEqual(perform_get_request(session, url), expected_text)
 
-    @patch('requests.get')
-    def test_perform_get_requestresponse_with_status_code_404_raises_exception(
-            self,
-            mock_response):
+    def test_perform_get_request_resp_with_status_code_404_raises_exception(
+            self):
         url = 'https://smarsy.ua/'
-        mock_response.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, perform_get_request, url)
+        session = Mock(
+            get=MagicMock(
+                return_value=Mock(status_code=404)
+            )
+        )
+        self.assertRaises(requests.HTTPError, perform_get_request, session, url)
 
     def test_login_page_has_expected_title(self):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
