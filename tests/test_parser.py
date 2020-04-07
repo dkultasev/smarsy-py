@@ -27,14 +27,16 @@ class TestsGetPage(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @patch('requests.get')
-    def test_perform_get_request_uses_provided_url_for_request(
-            self,
-            mock_request):
-        mock_request.return_value.status_code = 200
+    def test_perform_get_request_uses_provided_url_for_request(self):
+        session = Mock(
+            get=MagicMock(
+                return_value=Mock(status_code=200)
+            )
+        )
         exepted_url = 'https://smarsy.ua/'
-        perform_get_request(exepted_url)
-        mock_request.assert_called_with(exepted_url)
+        perform_get_request(session, exepted_url)
+        session.get.assert_called_with(url=exepted_url,
+                                       data=None, headers=None)
 
     @patch('requests.get')
     def test_perform_get_request_returns_expected_text_on_valid_request(
