@@ -4,3 +4,4 @@
 myvenv/
 *.pyc
 src/tempCodeRunnerFile.py
+cfg/login.json

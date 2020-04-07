@@ -12,8 +12,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # from import is supposed to be at the top of the file
 from src.parse import (perform_get_request, validate_title,
                        get_user_credentials,
-                       open_json_file, validate_object_keys,
-                       perform_post_request)
+                       open_json_file,
+                       perform_post_request,
+                       validate_object_keys,
+                       get_headers,
+                       login,
+                       Urls)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -231,7 +235,60 @@ class TestsFileOperations(unittest.TestCase):
             validate_object_keys(keys_list, creds)
         self.assertEqual('Key is missing', str(ke.exception))
 
-    def test_if_empty_keys_raise_exception_with_empty_key(self):
+    @patch('src.parse.open_json_file')
+    def test_user_headers_object_is_the_same_like_in_file(self,
+                                                          mock_json_load):
+        expected = {
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive'
+        }
+        mock_json_load.return_value = expected
+        actual = get_headers()
+        self.assertEqual(actual, expected)
+
+
+@patch('src.parse.perform_post_request', return_value='Smarsy Login')
+@patch('src.parse.get_user_credentials', return_value={'u': 'name'})
+@patch('src.parse.get_headers', return_value={'h': '123'})
+class TestsParse(unittest.TestCase):
+    def test_login_gets_headers(self,
+                                mock_headers,
+                                user_credentials,
+                                mock_request):
+        login()
+        self.assertTrue(mock_headers.called)
+
+    def test_login_gets_credentials(self,
+                                    mock_headers,
+                                    user_credentials,
+                                    mock_request):
+        login()
+        self.assertTrue(user_credentials.called)
+
+    @patch('requests.Session', return_value='session')
+    def test_login_uses_login_page_in_request(self,
+                                              mock_session,
+                                              mock_headers,
+                                              user_credentials,
+                                              mock_request):
+        login()
+        mock_request.assert_called_with(mock_session.return_value,
+                                        Urls.LOGIN.value,
+                                        user_credentials.return_value,
+                                        mock_headers.return_value)
+
+    @patch('requests.Session', return_value='session')
+    def test_login_returns_post_request_text(self,
+                                             mock_session,
+                                             mock_headers,
+                                             user_credentials,
+                                             mock_request):
+        self.assertEqual(login(), 'Smarsy Login')
+
+    def test_if_empty_keys_raise_exception_with_empty_key(self,
+                                                          mock_headers,
+                                                          user_credentials,
+                                                          mock_request):
         keys_list = ()
         creds = {
             'language': 'UA',

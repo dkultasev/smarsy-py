@@ -1,8 +1,13 @@
 from typing import Union, Tuple, List
-import requests
 from bs4 import BeautifulSoup
+from enum import Enum
+import requests
 import json
 import os
+
+
+class Urls(Enum):
+    LOGIN = 'https://smarsy.ua/login.php?jsid=Login'
 
 
 def perform_get_request(url):
@@ -17,10 +22,10 @@ def perform_post_request(session, url, data=None, headers=None):
     """
     Performs post request.
 
-    :param session: Request session
-    :param url: URL for Request object
+    :param session: `Request` session
+    :param url: URL for `Request` object
     :param data: (optional) Dictionary, list of tuples, bytes, or
-      file-like object to send in the body of the Request
+      file-like object to send in the body of the `Request`
     :param headers: (optional) HTTP headers
     :returns: Response text
     :raises HTTPError: raises on reponse status code <> 200
@@ -34,7 +39,7 @@ def perform_post_request(session, url, data=None, headers=None):
 
 def validate_title(html):
     if BeautifulSoup(html, 'html.parser').title.text == \
-                     'Smarsy - Смарсі - Україна':
+            'Smarsy - Смарсі - Україна':
         return True
     else:
         raise Exception
@@ -71,3 +76,28 @@ def get_user_credentials():
             continue
         raise Exception(em.format(key))
     return login
+
+
+def get_headers():
+    """
+    Headers for HTTP request.
+
+    :returns: Headers for HTTP request
+    """
+    file_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..', 'cfg', 'headers.json'))
+    return open_json_file(file_path)
+
+
+def login():
+    """
+    Perform login to Smarsy.
+
+    :returns: true on succesful login
+    """
+    session = requests.Session()
+    response = perform_post_request(session,
+                                    Urls.LOGIN.value,
+                                    get_user_credentials(),
+                                    get_headers())
+    return response
