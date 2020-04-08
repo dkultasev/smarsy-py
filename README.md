@@ -1,3 +1,3 @@
-# smarsy
+# Smarsy
 
 Very important project

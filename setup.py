@@ -1,4 +1,4 @@
-import setuptools
+import setuptools  # noqa
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -17,8 +17,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        'Development Status :: 3 - Alpha',    
-        'Intended Audience :: Developers',      
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
     ],
     python_requires='>=3.6',
 )
