@@ -23,6 +23,14 @@ from smarsy.parse import (perform_get_request, validate_title,
 
 
 class TestsGetPage(unittest.TestCase):
+    @patch('requests.Session')
+    def test_perform_get_request_uses_provided_url_for_request_with_patch(
+            self, mock_response):
+        mock_response.get.return_value = Mock(status_code=200)
+        exepted_url = 'https://smarsy.ua/'
+        perform_get_request(mock_response, exepted_url)
+        mock_response.get.assert_called_with(url=exepted_url,
+                                             params=None, headers=None)
 
     def test_perform_get_request_uses_provided_url_for_request(self):
         session = Mock(
