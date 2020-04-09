@@ -1,1 +1,1 @@
-from smarsy.parse import login
+from smarsy.parse import login  # noqa
