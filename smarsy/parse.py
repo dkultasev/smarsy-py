@@ -7,7 +7,7 @@ import os
 
 
 class Urls(Enum):
-    LOGIN = 'https://smarsy.ua/login.php?jsid=Login'
+    LOGIN = 'https://smarsy.ua/login.php?jsid=Login' 
 
 
 def perform_get_request(session, url, params=None, headers=None):
