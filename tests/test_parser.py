@@ -22,11 +22,16 @@ from smarsy.parse import (perform_get_request, validate_title,
                        Urls)  # noqa
 
 
+class MockResponse:
+    def __init__(self, status_code):
+        self.status_code = Mock(status_code=status_code)
+
+
 class TestsGetPage(unittest.TestCase):
     @patch('requests.Session')
     def test_perform_get_request_uses_provided_url_for_request_with_patch(
             self, mock_response):
-        mock_response.get.return_value = Mock(status_code=200)
+        mock_response.get.return_value = MockResponse(200).status_code
         exepted_url = 'https://smarsy.ua/'
         perform_get_request(mock_response, exepted_url)
         mock_response.get.assert_called_with(url=exepted_url,
