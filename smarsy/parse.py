@@ -1,13 +1,9 @@
 from typing import Union, Tuple, List
 from bs4 import BeautifulSoup
-from enum import Enum
+from enums import Urls
 import requests
 import json
 import os
-
-
-class Urls(Enum):
-    LOGIN = 'https://smarsy.ua/login.php?jsid=Login'
 
 
 def perform_get_request(session, url, params=None, headers=None):

@@ -7,7 +7,9 @@ import sys
 import os
 import json
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..',
+                                             'smarsy')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
 from smarsy.parse import (perform_get_request, validate_title,
