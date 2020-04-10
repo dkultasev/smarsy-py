@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="smarsy",
-    version="0.0.4",
+    version="0.0.5",
     author="KulZu",
     author_email="dkultasev@gmail.com",
     description="Get child data from smarsy website",
