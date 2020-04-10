@@ -161,6 +161,18 @@ class TestsPostRequest(unittest.TestCase):
         )
         self.assertRaises(requests.HTTPError, perform_post_request, s, 'url')
 
+    def test_perform_post_request_changes_resonse_encoding_to_provided(self):
+        expected_encoding = 'utf8'
+        session = Mock(
+            post=MagicMock(
+                return_value=Mock(status_code=200)
+            )
+        )
+        perform_post_request(session=session,
+                             url='url',
+                             encoding=expected_encoding)
+        self.assertEqual(session.post.return_value.encoding, expected_encoding)
+
 
 class TestsFileOperations(unittest.TestCase):
     @patch('smarsy.parse.open_json_file')
