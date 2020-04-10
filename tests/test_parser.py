@@ -23,7 +23,7 @@ from smarsy.parse import (perform_get_request, validate_title,
 
 
 class MockResponse:
-    def __init__(self, status_code):
+    def __init__(self, status_code=200):
         self.status_code = Mock(status_code=status_code)
 
 
@@ -32,7 +32,7 @@ class TestsGetPage(unittest.TestCase):
 
     def test_perform_get_request_uses_provided_url_for_request_with_class(
             self, mock_response):
-        mock_response.get.return_value = MockResponse(200).status_code
+        mock_response.get.return_value = MockResponse().status_code
         exepted_url = 'https://smarsy.ua/'
         perform_get_request(mock_response, exepted_url)
         mock_response.get.assert_called_with(url=exepted_url,
@@ -40,7 +40,7 @@ class TestsGetPage(unittest.TestCase):
 
     def test_perform_get_request_uses_provided_url_for_request(
             self, mock_response):
-        mock_response.get.return_value = Mock(status_code=200)
+        mock_response.get.return_value = MockResponse().status_code
         exepted_url = 'https://smarsy.ua/'
         perform_get_request(mock_response, exepted_url)
         mock_response.get.assert_called_with(url=exepted_url,
@@ -49,7 +49,7 @@ class TestsGetPage(unittest.TestCase):
     def test_perform_get_request_returns_expected_text_on_valid_request(
             self, mock_response):
         url = 'https://smarsy.ua/'
-        mock_response.get.return_value = Mock(status_code=200)
+        mock_response.get.return_value = MockResponse().status_code
         expected_text = 'This is login Page'
         mock_response.get(url).text = expected_text
         self.assertEqual(perform_get_request(mock_response, url),
@@ -58,7 +58,7 @@ class TestsGetPage(unittest.TestCase):
     def test_perform_get_request_resp_with_status_code_404_raises_exception(
             self, mock_response):
         url = 'https://smarsy.ua/'
-        mock_response.get.return_value = Mock(status_code=404)
+        mock_response.get.return_value = MockResponse(404).status_code
         self.assertRaises(requests.HTTPError, perform_get_request,
                           mock_response, url)
 
@@ -94,7 +94,7 @@ class TestsPostRequest(unittest.TestCase):
 
     def test_perform_post_request_uses_provided_url_for_request(
             self, mock_response):
-        mock_response.post.return_value = Mock(status_code=200)
+        mock_response.post.return_value = MockResponse().status_code
         exepted_url = 'https://smarsy.ua/'
         perform_post_request(mock_response, exepted_url)
         mock_response.post.assert_called_with(
