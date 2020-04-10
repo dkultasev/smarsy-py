@@ -18,7 +18,7 @@ def perform_get_request(session, url, params=None, headers=None):
         raise requests.HTTPError("Error code - {}".format(r.status_code))
 
 
-def perform_post_request(session, url, data=None, headers=None):
+def perform_post_request(session, url, data=None, headers=None, encoding=None):
     """
     Performs post request.
 
@@ -31,6 +31,7 @@ def perform_post_request(session, url, data=None, headers=None):
     :raises HTTPError: raises on reponse status code <> 200
     """
     r = session.post(url=url, data=data, headers=headers)
+    r.encoding = encoding
     if r.status_code == 200:
         return r.text
     else:
