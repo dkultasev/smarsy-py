@@ -39,54 +39,42 @@ class TestsGetPage(unittest.TestCase):
         self.mocked_session.get.assert_called_with(url=self.default_url,
                                                    params=None, headers=None)
 
-    def test_perform_get_request_uses_provided_url_for_request(
-            self, mock_response):
-        mock_response.get.return_value = MockResponse().mocked_data
-        exepted_url = 'https://smarsy.ua/'
-        perform_get_request(mock_response, exepted_url)
-        mock_response.get.assert_called_with(url=exepted_url,
-                                             params=None, headers=None)
+    def test_perform_get_request_uses_provided_url_for_request(self):
+        perform_get_request(self.mocked_session, self.default_url)
+        self.mocked_session.get.assert_called_with(url=self.default_url,
+                                                   params=None, headers=None)
 
     def test_perform_get_request_returns_expected_text_on_valid_request(
-            self, mock_response):
-        url = 'https://smarsy.ua/'
-        mock_response.get.return_value = MockResponse().mocked_data
+            self):
         expected_text = 'This is login Page'
-        mock_response.get(url).text = expected_text
-        self.assertEqual(perform_get_request(mock_response, url),
+        self.mocked_session.get(self.default_url).text = expected_text
+        self.assertEqual(perform_get_request(self.mocked_session,
+                                             self.default_url),
                          expected_text)
 
     def test_perform_get_request_resp_with_status_code_404_raises_exception(
-            self, mock_response):
-        url = 'https://smarsy.ua/'
-        mock_response.get.return_value = MockResponse(404).mocked_data
+            self):
+        self.mocked_session.get.return_value.status_code = 404
         self.assertRaises(requests.HTTPError, perform_get_request,
-                          mock_response, url)
+                          self.mocked_session, self.default_url)
 
     def test_perform_get_request_uses_provided_data_for_get_request(
-            self, mock_response):
-        expected_params = 'data'
-        expected_url = 'url'
-        mock_response.get.return_value = MockResponse(200, expected_url,
-                                                      expected_params
-                                                      ).mocked_data
-        perform_get_request(mock_response, expected_url,
+            self):
+        expected_params = 'params'
+        perform_get_request(self.mocked_session, self.default_url,
                             params=expected_params)
-        mock_response.get.assert_called_with(url=expected_url,
-                                             params=expected_params,
-                                             headers=None)
+        self.mocked_session.get.assert_called_with(url=self.default_url,
+                                                   params=expected_params,
+                                                   headers=None)
 
     def test_perform_get_request_uses_provided_headers_for_get_request(
-            self, mock_response):
+            self):
         expected_headers = {"a": 1}
-        expected_url = 'url'
-        mock_response.get.return_value = MockResponse(200, expected_url,
-                                                      headers=expected_headers
-                                                      ).mocked_data
-        perform_get_request(mock_response, expected_url,
+        perform_get_request(self.mocked_session, self.default_url,
                             headers=expected_headers)
-        mock_response.get.assert_called_with(url=expected_url, params=None,
-                                             headers=expected_headers)
+        self.mocked_session.get.assert_called_with(url=self.default_url,
+                                                   params=None,
+                                                   headers=expected_headers)
 
 
 @patch('requests.Session')
