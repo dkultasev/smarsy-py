@@ -22,24 +22,22 @@ from smarsy.parse import (perform_get_request, validate_title,
                        Urls)  # noqa
 
 
-class MockResponse:
-    def __init__(self, status_code=200, url='https://smarsy.ua/',
-                 params=None, headers=None, text=None, data=None):
-        self.mocked_data = Mock(status_code=status_code, url=url,
-                                params=params, headers=headers, text=text,
-                                data=data)
-
-
-@patch('requests.Session')
 class TestsGetPage(unittest.TestCase):
+    @patch('requests.Session')
+    def setUp(self, mocked_session):
+        self.default_url = 'http://www.smarsy.ua'
+        self.default_text = 'Informative text'
+        self.default_status_code = 200
+        mocked_session.get.return_value = Mock(
+            status_code=self.default_status_code,
+            text=self.default_text)
+        self.mocked_session = mocked_session
 
     def test_perform_get_request_uses_provided_url_for_request_with_class(
-            self, mock_response):
-        mock_response.get.return_value = MockResponse().mocked_data
-        exepted_url = 'https://smarsy.ua/'
-        perform_get_request(mock_response, exepted_url)
-        mock_response.get.assert_called_with(url=exepted_url,
-                                             params=None, headers=None)
+            self):
+        perform_get_request(self.mocked_session, self.default_url)
+        self.mocked_session.get.assert_called_with(url=self.default_url,
+                                                   params=None, headers=None)
 
     def test_perform_get_request_uses_provided_url_for_request(
             self, mock_response):
