@@ -13,13 +13,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
 from smarsy.parse import (perform_get_request, validate_title,
-                       get_user_credentials,
-                       open_json_file,
-                       perform_post_request,
-                       validate_object_keys,
-                       get_headers,
-                       login,
-                       Urls)  # noqa
+                       get_user_credentials, open_json_file,
+                       perform_post_request, validate_object_keys,
+                       get_headers, login, Urls,
+                       childs_page_return_right_login)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -322,6 +319,12 @@ class TestPageContent(unittest.TestCase):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
         self.assertTrue(actual)
+
+    @patch('smarsy.parse.login',
+           return_value='<td colspan="2" class="username"><b>login</b></td>')
+    def test_childs_page_has_expected_username(self, mocked_page):
+        expected_login = 'login'
+        self.assertEqual(childs_page_return_right_login(), expected_login)
 
 
 if __name__ == '__main__':

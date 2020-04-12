@@ -98,3 +98,12 @@ def login():
                                     get_user_credentials(),
                                     get_headers())
     return response
+
+
+def childs_page_return_right_login():
+    """
+    Receive HTML page from login function and parse childs data
+    """
+    child_page = BeautifulSoup(login(), 'html.parser')
+    smarsy_login = child_page.find('td', {'class': 'username'}).text
+    return smarsy_login
