@@ -77,57 +77,55 @@ class TestsGetPage(unittest.TestCase):
                                                    headers=expected_headers)
 
 
-@patch('requests.Session')
 class TestsPostRequest(unittest.TestCase):
 
+    @patch('requests.Session')
+    def setUp(self, mocked_session):
+        self.default_url = 'http://www.smarsy.ua'
+        self.default_text = 'Informative text'
+        self.default_status_code = 200
+        mocked_session.post.return_value = Mock(
+            status_code=self.default_status_code,
+            text=self.default_text)
+        self.mocked_session = mocked_session
+
     def test_perform_post_request_uses_provided_url_for_request(
-            self, mock_response):
-        mock_response.post.return_value = MockResponse().mocked_data
-        exepted_url = 'https://smarsy.ua/'
-        perform_post_request(mock_response, exepted_url)
-        mock_response.post.assert_called_with(
-            url=exepted_url, data=None, headers=None)
+            self):
+        perform_post_request(self.mocked_session, self.default_url)
+        self.mocked_session.post.assert_called_with(url=self.default_url,
+                                                    data=None, headers=None)
 
     def test_perform_post_request_returns_expected_text_on_valid_request(
-            self, mock_response):
+            self):
         expected_text = 'some_text'
-        mock_response.post.return_value = MockResponse(200, text=expected_text
-                                                       ).mocked_data
-        self.assertEqual(perform_post_request(mock_response, 'url'),
+        self.mocked_session.post(self.default_url).text = expected_text
+        self.assertEqual(perform_post_request(self.mocked_session,
+                                              self.default_url),
                          expected_text)
 
     def test_perform_post_request_uses_provided_data_for_post_request(
-            self, mock_response):
+            self):
         expected_data = 'data'
-        expected_url = 'url'
-        mock_response.post.return_value = MockResponse(200, expected_url,
-                                                       expected_data
-                                                       ).mocked_data
-        perform_post_request(mock_response, expected_url, data=expected_data)
-        mock_response.post.assert_called_with(url=expected_url,
-                                              data=expected_data,
-                                              headers=None)
+        perform_post_request(self.mocked_session, self.default_url,
+                             data=expected_data)
+        self.mocked_session.post.assert_called_with(url=self.default_url,
+                                                    data=expected_data,
+                                                    headers=None)
 
     def test_perform_post_request_uses_provided_headers_for_post_request(
-            self, mock_response):
+            self):
         expected_headers = {"a": 1}
-        expected_url = 'url'
-        mock_response.post.return_value = MockResponse(200, data=None,
-                                                       text=expected_url,
-                                                       headers=expected_headers
-                                                       ).mocked_data
-        perform_post_request(mock_response, expected_url,
+        perform_post_request(self.mocked_session, self.default_url,
                              headers=expected_headers)
-        mock_response.post.assert_called_with(url=expected_url, data=None,
-                                              headers=expected_headers)
+        self.mocked_session.post.assert_called_with(url=self.default_url,
+                                                    data=None,
+                                                    headers=expected_headers)
 
     def test_perform_post_request_resp_with_status_code_404_raises_exception(
-            self, mock_response):
-        expected_text = 'some_text'
-        mock_response.post.return_value = MockResponse(404, text=expected_text
-                                                       ).mocked_data
+            self):
+        self.mocked_session.post.return_value.status_code = 404
         self.assertRaises(requests.HTTPError, perform_post_request,
-                          mock_response, 'url')
+                          self.mocked_session, self.default_url)
 
 
 class TestsFileOperations(unittest.TestCase):
