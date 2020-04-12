@@ -23,143 +23,109 @@ from smarsy.parse import (perform_get_request, validate_title,
 
 
 class TestsGetPage(unittest.TestCase):
+    @patch('requests.Session')
+    def setUp(self, mocked_session):
+        self.default_url = 'http://www.smarsy.ua'
+        self.default_text = 'Informative text'
+        self.default_status_code = 200
+        mocked_session.get.return_value = Mock(
+            status_code=self.default_status_code,
+            text=self.default_text)
+        self.mocked_session = mocked_session
+
+    def test_perform_get_request_uses_provided_url_for_request_with_class(
+            self):
+        perform_get_request(self.mocked_session, self.default_url)
+        self.mocked_session.get.assert_called_with(url=self.default_url,
+                                                   params=None, headers=None)
 
     def test_perform_get_request_uses_provided_url_for_request(self):
-        session = Mock(
-            get=MagicMock(
-                return_value=Mock(status_code=200)
-            )
-        )
-        exepted_url = 'https://smarsy.ua/'
-        perform_get_request(session, exepted_url)
-        session.get.assert_called_with(url=exepted_url,
-                                       params=None, headers=None)
+        perform_get_request(self.mocked_session, self.default_url)
+        self.mocked_session.get.assert_called_with(url=self.default_url,
+                                                   params=None, headers=None)
 
-    def test_perform_get_request_returns_expected_text_on_valid_request(self):
-        url = 'https://smarsy.ua/'
-        session = Mock(
-            get=MagicMock(
-                return_value=Mock(status_code=200)
-            )
-        )
+    def test_perform_get_request_returns_expected_text_on_valid_request(
+            self):
         expected_text = 'This is login Page'
-        session.get(url).text = expected_text
-        self.assertEqual(perform_get_request(session, url), expected_text)
+        self.mocked_session.get(self.default_url).text = expected_text
+        self.assertEqual(perform_get_request(self.mocked_session,
+                                             self.default_url),
+                         expected_text)
 
     def test_perform_get_request_resp_with_status_code_404_raises_exception(
             self):
-        url = 'https://smarsy.ua/'
-        session = Mock(
-            get=MagicMock(
-                return_value=Mock(status_code=404)
-            )
-        )
-        self.assertRaises(requests.HTTPError, perform_get_request, session,
-                          url)
+        self.mocked_session.get.return_value.status_code = 404
+        self.assertRaises(requests.HTTPError, perform_get_request,
+                          self.mocked_session, self.default_url)
 
     def test_perform_get_request_uses_provided_data_for_get_request(
             self):
-        expected_params = 'data'
-        expected_url = 'url'
-        session = Mock(
-            get=MagicMock(
-                return_value=Mock(status_code=200,
-                                  param=expected_params,
-                                  text=expected_url)
-            )
-        )
-        perform_get_request(session, expected_url, params=expected_params)
-        session.get.assert_called_with(url=expected_url,
-                                       params=expected_params,
-                                       headers=None)
+        expected_params = 'params'
+        perform_get_request(self.mocked_session, self.default_url,
+                            params=expected_params)
+        self.mocked_session.get.assert_called_with(url=self.default_url,
+                                                   params=expected_params,
+                                                   headers=None)
 
     def test_perform_get_request_uses_provided_headers_for_get_request(
             self):
         expected_headers = {"a": 1}
-        expected_url = 'url'
-        session = Mock(
-            get=MagicMock(
-                return_value=Mock(status_code=200,
-                                  params=None,
-                                  text=expected_url,
-                                  headers=expected_headers)
-            )
-        )
-        perform_get_request(session, expected_url, headers=expected_headers)
-        session.get.assert_called_with(url=expected_url, params=None,
-                                       headers=expected_headers)
-
-    def test_login_page_has_expected_title(self):
-        html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
-        actual = validate_title(html)
-        self.assertTrue(actual)
+        perform_get_request(self.mocked_session, self.default_url,
+                            headers=expected_headers)
+        self.mocked_session.get.assert_called_with(url=self.default_url,
+                                                   params=None,
+                                                   headers=expected_headers)
 
 
 class TestsPostRequest(unittest.TestCase):
 
+    @patch('requests.Session')
+    def setUp(self, mocked_session):
+        self.default_url = 'http://www.smarsy.ua'
+        self.default_text = 'Informative text'
+        self.default_status_code = 200
+        mocked_session.post.return_value = Mock(
+            status_code=self.default_status_code,
+            text=self.default_text)
+        self.mocked_session = mocked_session
+
     def test_perform_post_request_uses_provided_url_for_request(
             self):
-        session = Mock(
-            post=MagicMock(
-                return_value=Mock(status_code=200)
-            )
-        )
-        exepted_url = 'https://smarsy.ua/'
-        perform_post_request(session, exepted_url)
-        session.post.assert_called_with(
-            url=exepted_url, data=None, headers=None)
+        perform_post_request(self.mocked_session, self.default_url)
+        self.mocked_session.post.assert_called_with(url=self.default_url,
+                                                    data=None, headers=None)
 
     def test_perform_post_request_returns_expected_text_on_valid_request(
             self):
         expected_text = 'some_text'
-        session = Mock(
-            post=MagicMock(
-                return_value=Mock(text=expected_text, status_code=200)
-            )
-        )
-        self.assertEqual(perform_post_request(session, 'url'), expected_text)
+        self.mocked_session.post(self.default_url).text = expected_text
+        self.assertEqual(perform_post_request(self.mocked_session,
+                                              self.default_url),
+                         expected_text)
 
     def test_perform_post_request_uses_provided_data_for_post_request(
             self):
         expected_data = 'data'
-        expected_url = 'url'
-        session = Mock(
-            post=MagicMock(
-                return_value=Mock(status_code=200,
-                                  data=expected_data,
-                                  text=expected_url)
-            )
-        )
-        perform_post_request(session, expected_url, data=expected_data)
-        session.post.assert_called_with(url=expected_url,
-                                        data=expected_data,
-                                        headers=None)
+        perform_post_request(self.mocked_session, self.default_url,
+                             data=expected_data)
+        self.mocked_session.post.assert_called_with(url=self.default_url,
+                                                    data=expected_data,
+                                                    headers=None)
 
     def test_perform_post_request_uses_provided_headers_for_post_request(
             self):
         expected_headers = {"a": 1}
-        expected_url = 'url'
-        session = Mock(
-            post=MagicMock(
-                return_value=Mock(status_code=200,
-                                  data=None,
-                                  text=expected_url,
-                                  headers=expected_headers)
-            )
-        )
-        perform_post_request(session, expected_url, headers=expected_headers)
-        session.post.assert_called_with(
-            url=expected_url, data=None, headers=expected_headers)
+        perform_post_request(self.mocked_session, self.default_url,
+                             headers=expected_headers)
+        self.mocked_session.post.assert_called_with(url=self.default_url,
+                                                    data=None,
+                                                    headers=expected_headers)
 
     def test_perform_post_request_resp_with_status_code_404_raises_exception(
             self):
-        expected_text = 'some_text'
-        s = Mock(
-            post=MagicMock(
-                return_value=Mock(text=expected_text, status_code=404)
-            )
-        )
-        self.assertRaises(requests.HTTPError, perform_post_request, s, 'url')
+        self.mocked_session.post.return_value.status_code = 404
+        self.assertRaises(requests.HTTPError, perform_post_request,
+                          self.mocked_session, self.default_url)
 
     def test_perform_post_request_changes_resonse_encoding_to_provided(self):
         expected_encoding = 'utf8'
@@ -348,6 +314,14 @@ class TestsParse(unittest.TestCase):
         with self.assertRaises(Exception) as ke:
             validate_object_keys(keys_list, creds)
         self.assertEqual('Key is empty', str(ke.exception))
+
+
+class TestPageContent(unittest.TestCase):
+
+    def test_login_page_has_expected_title(self):
+        html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
+        actual = validate_title(html)
+        self.assertTrue(actual)
 
 
 if __name__ == '__main__':
