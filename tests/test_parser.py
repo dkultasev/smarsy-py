@@ -124,17 +124,12 @@ class TestsPostRequest(unittest.TestCase):
         self.assertRaises(requests.HTTPError, perform_post_request,
                           self.mocked_session, self.default_url)
 
-    def test_perform_post_request_changes_resonse_encoding_to_provided(self):
+    def test_perform_post_request_changes_response_encoding_to_provided(self):
         expected_encoding = 'utf8'
-        session = Mock(
-            post=MagicMock(
-                return_value=Mock(status_code=200)
-            )
-        )
-        perform_post_request(session=session,
-                             url='url',
+        perform_post_request(self.mocked_session, self.default_url,
                              encoding=expected_encoding)
-        self.assertEqual(session.post.return_value.encoding, expected_encoding)
+        self.assertEqual(self.mocked_session.post.return_value.encoding, 
+                         expected_encoding)
 
 
 class TestsFileOperations(unittest.TestCase):
