@@ -320,11 +320,18 @@ class TestPageContent(unittest.TestCase):
         actual = validate_title(html)
         self.assertTrue(actual)
 
-    @patch('smarsy.parse.login',
-           return_value='<td colspan="2" class="username"><b>login</b></td>')
-    def test_childs_page_has_expected_username(self, mocked_page):
-        expected_login = 'login'
-        self.assertEqual(childs_page_return_right_login(), expected_login)
+    @patch('smarsy.parse.get_user_credentials',
+           return_value={'username': 'login'})
+    def test_childs_page_has_expected_username(self, mocked_value):
+        response_string = '\n<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" \
+                     "http://www.w3.org/TR/html4/strict.dtd">\n<HTML>\n \
+                     <HEAD>\n<TITLE>login</TITLE>\n  \
+                     <META http-equiv="content-type" content="text/html; \
+                     charset=windows-1251">\n  \
+                     <META name="language" content="ukrainian">\n  \
+                     <META name="reply-to" content="web@smarsy.ua">\n  \
+                     <META name="google-site-verification" '
+        self.assertTrue(childs_page_return_right_login(response_string))
 
 
 if __name__ == '__main__':
