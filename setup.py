@@ -5,11 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="smarsy",
-<<<<<<< HEAD
     version="0.0.8",
-=======
-    version="0.0.7",
->>>>>>> origin/master
     author="KulZu",
     author_email="dkultasev@gmail.com",
     description="Rest API for the smarsy.ua website",
