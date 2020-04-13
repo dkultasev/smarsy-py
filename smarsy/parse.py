@@ -86,11 +86,10 @@ def get_headers():
     return open_json_file(file_path)
 
 
-def childs_page_return_right_login(response_page):
+def childs_page_return_right_login(response_page, smarsy_login):
     """
     Receive HTML page from login function and check we've got expected source
     """
-    smarsy_login = get_user_credentials()['username']
     if smarsy_login in response_page:
         return True
 
