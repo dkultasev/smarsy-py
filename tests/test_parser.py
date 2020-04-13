@@ -6,6 +6,7 @@ import subprocess
 import sys
 import os
 import json
+import datetime
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..',
@@ -16,7 +17,8 @@ from smarsy.parse import (perform_get_request, validate_title,
                        get_user_credentials, open_json_file,
                        perform_post_request, validate_object_keys,
                        get_headers, login, Urls,
-                       childs_page_return_right_login)  # noqa
+                       childs_page_return_right_login,
+                       convert_str_date_to_object)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -128,7 +130,7 @@ class TestsPostRequest(unittest.TestCase):
         expected_encoding = 'utf8'
         perform_post_request(self.mocked_session, self.default_url,
                              encoding=expected_encoding)
-        self.assertEqual(self.mocked_session.post.return_value.encoding, 
+        self.assertEqual(self.mocked_session.post.return_value.encoding,
                          expected_encoding)
 
 
@@ -329,6 +331,17 @@ class TestPageContent(unittest.TestCase):
         with self.assertRaises(ValueError) as error:
             childs_page_return_right_login(response_string, 'nologin')
         self.assertEqual('Invalid Smarsy Login', str(error.exception))
+
+    def test_convert_str_date_to_object_return_wright_type(self):
+        date_in_str = '24 февраля 2012 г.'
+        self.assertIsInstance(convert_str_date_to_object(date_in_str),
+                              datetime.date)
+
+    def test_convert_str_date_to_object_raise_exception_(self):
+        date_in_str = '24-февраля-2012'
+        with self.assertRaises(ValueError) as error:
+            convert_str_date_to_object(date_in_str)
+        self.assertEqual('Wrong date format', str(error.exception))
 
 
 if __name__ == '__main__':

@@ -1,9 +1,13 @@
-from typing import Union, Tuple, List
-from bs4 import BeautifulSoup
-from enums import Urls
-import requests
 import json
+import locale
 import os
+import datetime
+from typing import List, Tuple, Union
+
+import requests
+from bs4 import BeautifulSoup
+
+from enums import Urls
 
 
 def perform_get_request(session, url, params=None, headers=None):
@@ -94,6 +98,16 @@ def childs_page_return_right_login(response_page, smarsy_login):
         return True
     else:
         raise ValueError('Invalid Smarsy Login')
+
+
+def convert_str_date_to_object(date_in_str):
+    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
+    format = '%d %B %Y г.'
+    try:
+        date_obj = datetime.datetime.strptime(date_in_str, format).date()
+        return date_obj
+    except ValueError:
+        raise ValueError('Wrong date format')
 
 
 def login():
