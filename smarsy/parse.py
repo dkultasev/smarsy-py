@@ -92,6 +92,8 @@ def childs_page_return_right_login(response_page, smarsy_login):
     """
     if smarsy_login in response_page:
         return True
+    else:
+        raise ValueError('Invalid Smarsy Login')
 
 
 def login():

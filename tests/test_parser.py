@@ -327,6 +327,14 @@ class TestPageContent(unittest.TestCase):
         self.assertTrue(childs_page_return_right_login(response_string,
                                                        'login'))
 
+    def test_childs_page_raise_exception_with_unexpected_username(self):
+        response_string = '\n<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" \
+                     "http://www.w3.org/TR/html4/strict.dtd">\n<HTML>\n \
+                     <HEAD>\n<TITLE>login</TITLE>\n'
+        with self.assertRaises(ValueError) as error:
+            childs_page_return_right_login(response_string, 'nologin')
+        self.assertEqual('Invalid Smarsy Login', str(error.exception))
+
 
 if __name__ == '__main__':
     if '--unittest' in sys.argv:
