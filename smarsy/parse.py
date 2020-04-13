@@ -101,7 +101,7 @@ def childs_page_return_right_login(response_page, smarsy_login):
 
 
 def convert_str_date_to_object(date_in_str):
-    locale.setlocale(locale.LC_TIME, 'ru_RU')
+    locale.setlocale(category=locale.LC_TIME, locale='ru_RU')
     format = '%d %B %Y г.'
     try:
         date_obj = datetime.datetime.strptime(date_in_str, format).date()
