@@ -13,13 +13,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
 from smarsy.parse import (perform_get_request, validate_title,
-                       get_user_credentials,
-                       open_json_file,
-                       perform_post_request,
-                       validate_object_keys,
-                       get_headers,
-                       login,
-                       Urls)  # noqa
+                       get_user_credentials, open_json_file,
+                       perform_post_request, validate_object_keys,
+                       get_headers, login, Urls,
+                       childs_page_return_right_login)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -317,6 +314,21 @@ class TestPageContent(unittest.TestCase):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
         self.assertTrue(actual)
+
+    def test_childs_page_has_expected_username(self):
+        response_string = '\n<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" \
+                     "http://www.w3.org/TR/html4/strict.dtd">\n<HTML>\n \
+                     <HEAD>\n<TITLE>login</TITLE>\n'
+        self.assertTrue(childs_page_return_right_login(response_string,
+                                                       'login'))
+
+    def test_childs_page_raise_exception_with_unexpected_username(self):
+        response_string = '\n<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" \
+                     "http://www.w3.org/TR/html4/strict.dtd">\n<HTML>\n \
+                     <HEAD>\n<TITLE>login</TITLE>\n'
+        with self.assertRaises(ValueError) as error:
+            childs_page_return_right_login(response_string, 'nologin')
+        self.assertEqual('Invalid Smarsy Login', str(error.exception))
 
 
 if __name__ == '__main__':
