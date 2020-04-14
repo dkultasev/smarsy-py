@@ -2,13 +2,14 @@ import setuptools  # noqa
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
+    description = long_description.split('\n')[0].replace('# ', '')
 
 setuptools.setup(
     name="smarsy",
     version="0.0.8",
     author="KulZu",
     author_email="dkultasev@gmail.com",
-    description="Rest API for the smarsy.ua website",
+    description=description,
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/dkultasev/smarsy-py",
