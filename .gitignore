@@ -1,9 +1,8 @@
 **/__pycache__/**
-.vscode
+.vscode/launch.json
 .pytest_cache
 myvenv/
 *.pyc
-src/tempCodeRunnerFile.py
 cfg/login.json
 dist
 *.egg-info
