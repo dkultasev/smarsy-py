@@ -20,5 +20,6 @@
         "**/.pytest_cache": true,
         "**/*.egg-info": true,
         "**/dist": true
-    }
+    },
+    "python.pythonPath": "myvenv\\Scripts\\python"
 }
