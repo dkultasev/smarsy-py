@@ -1,0 +1,25 @@
+{
+    "python.testing.unittestEnabled": true,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": false,
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true,
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "test_*.py"
+    ],
+    "python.linting.pycodestyleEnabled": false,
+    "python.autoComplete.extraPaths": [
+        "./smarsy"
+    ],
+    "python.linting.flake8Enabled": true,
+    "files.exclude": {
+        "**/.pytest_cache": true,
+        "**/*.egg-info": true,
+        "**/dist": true
+    },
+    "python.pythonPath": "${env.SMARSY_PYTHON_INTERPRETER_PATH}"
+}
