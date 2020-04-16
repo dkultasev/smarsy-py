@@ -100,14 +100,10 @@ def childs_page_return_right_login(response_page, smarsy_login):
         raise ValueError('Invalid Smarsy Login')
 
 
-def convert_ro_date_from_russian_written(date_in_str):
+def convert_to_date_from_russian_written(date_in_str, format='%d %B %Y г.'):
     locale.setlocale(locale.LC_TIME, 'ru_RU')
-    # format = '%d %B %Y г.'
-    # try:
-    #     date_obj = datetime.datetime.strptime(date_in_str, format).date()
-    #     return date_obj
-    # except ValueError:
-    #     raise ValueError('Wrong date format')
+    date_with_time = datetime.datetime.strptime(date_in_str, format)
+    return date_with_time.date()
 
 
 def login():
@@ -122,4 +118,3 @@ def login():
                                     get_user_credentials(),
                                     get_headers())
     return response
-# convert_str_date_to_object('24 февраля 2012 г.')
