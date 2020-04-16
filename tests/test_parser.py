@@ -342,14 +342,14 @@ class TestPageContent(unittest.TestCase):
 
     @patch('locale.setlocale')
     def test_convert_str_date_to_object_return_wright_type(self, mock_locale):
-        mock_locale(locale.LC_TIME, 'ru_RU')
+        mock_locale(Mock(locale.LC_TIME, 'ru_RU'))
         date_in_str = '24 февраля 2012 г.'
         self.assertIsInstance(convert_str_date_to_object(date_in_str),
                               datetime.date)
 
     @patch('locale.setlocale')
     def test_convert_str_date_to_object_raise_exception_(self, mock_locale):
-        mock_locale(locale.LC_TIME, 'ru_RU')
+        mock_locale(Mock(locale.LC_TIME, 'ru_RU'))
         date_in_str = '24-февраля-2012'
         with self.assertRaises(ValueError) as error:
             convert_str_date_to_object(date_in_str)
