@@ -7,7 +7,10 @@ import sys
 import os
 import json
 import datetime
+import locale
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..',
                                              'smarsy')))
@@ -332,12 +335,21 @@ class TestPageContent(unittest.TestCase):
             childs_page_return_right_login(response_string, 'nologin')
         self.assertEqual('Invalid Smarsy Login', str(error.exception))
 
-    def test_convert_str_date_to_object_return_wright_type(self):
+    @patch('locale.setlocale')
+    def test_locale_called_with_right_attributes(self, mock_locale):
+        convert_str_date_to_object('24 февраля 2012 г.')
+        mock_locale.assert_called_with(locale.LC_TIME, 'ru_RU')
+
+    @patch('locale.setlocale')
+    def test_convert_str_date_to_object_return_wright_type(self, mock_locale):
+        mock_locale(locale.LC_TIME, 'ru_RU')
         date_in_str = '24 февраля 2012 г.'
         self.assertIsInstance(convert_str_date_to_object(date_in_str),
                               datetime.date)
 
-    def test_convert_str_date_to_object_raise_exception_(self):
+    @patch('locale.setlocale')
+    def test_convert_str_date_to_object_raise_exception_(self, mock_locale):
+        mock_locale(locale.LC_TIME, 'ru_RU')
         date_in_str = '24-февраля-2012'
         with self.assertRaises(ValueError) as error:
             convert_str_date_to_object(date_in_str)
