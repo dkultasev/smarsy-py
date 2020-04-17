@@ -96,14 +96,17 @@ def childs_page_return_right_login(response_page, smarsy_login):
         raise ValueError('Invalid Smarsy Login')
 
 
-def login():
+def login(*args):
     """
     Perform login to Smarsy.
 
     :returns: true on succesful login
     """
     session = requests.Session()
-    response = perform_post_request(session,
+    if args:
+        raise ValueError
+    else:
+        response = perform_post_request(session,
                                     Urls.LOGIN.value,
                                     get_user_credentials(),
                                     get_headers())

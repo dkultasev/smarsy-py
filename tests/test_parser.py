@@ -128,7 +128,7 @@ class TestsPostRequest(unittest.TestCase):
         expected_encoding = 'utf8'
         perform_post_request(self.mocked_session, self.default_url,
                              encoding=expected_encoding)
-        self.assertEqual(self.mocked_session.post.return_value.encoding, 
+        self.assertEqual(self.mocked_session.post.return_value.encoding,
                          expected_encoding)
 
 
@@ -306,6 +306,10 @@ class TestsParse(unittest.TestCase):
         with self.assertRaises(Exception) as ke:
             validate_object_keys(keys_list, creds)
         self.assertEqual('Key is empty', str(ke.exception))
+
+    @patch('requests.Session', return_value='session')
+    def test_login_with_params(self):
+        login('username', 'pass')
 
 
 class TestPageContent(unittest.TestCase):
