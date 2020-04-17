@@ -319,7 +319,7 @@ class TestsParse(unittest.TestCase):
         expected = {'username': 'username',
                     'password': 'pass',
                     'language': 'UA'}
-        login(username=expected.username, password=expected.password)
+        login(username=expected['username'], password=expected['password'])
         mock_request.assert_called_with(mock_session.return_value,
                                         Urls.LOGIN.value,
                                         expected,
