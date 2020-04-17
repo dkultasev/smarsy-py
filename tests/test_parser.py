@@ -1,13 +1,10 @@
 from unittest.mock import patch, mock_open, MagicMock, Mock
 
 import unittest
-import requests
 import subprocess
 import sys
 import os
 import json
-import datetime
-import locale
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..')))
@@ -54,10 +51,11 @@ class TestsGetPage(unittest.TestCase):
                                              self.default_url),
                          expected_text)
 
+    @patch('requests.HTTPError', Exception)
     def test_perform_get_request_resp_with_status_code_404_raises_exception(
             self):
         self.mocked_session.get.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, perform_get_request,
+        self.assertRaises(Exception, perform_get_request,
                           self.mocked_session, self.default_url)
 
     def test_perform_get_request_uses_provided_data_for_get_request(
@@ -123,10 +121,11 @@ class TestsPostRequest(unittest.TestCase):
                                                     data=None,
                                                     headers=expected_headers)
 
+    @patch('requests.HTTPError', Exception)
     def test_perform_post_request_resp_with_status_code_404_raises_exception(
             self):
         self.mocked_session.post.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, perform_post_request,
+        self.assertRaises(Exception, perform_post_request,
                           self.mocked_session, self.default_url)
 
     def test_perform_post_request_changes_response_encoding_to_provided(self):
@@ -335,12 +334,13 @@ class TestPageContent(unittest.TestCase):
             childs_page_return_right_login(response_string, 'nologin')
         self.assertEqual('Invalid Smarsy Login', str(error.exception))
 
+    @patch('locale.LC_TIME', 100)
     @patch('datetime.datetime')
     @patch('locale.setlocale')
     def test_ru_locale_is_used_when_date_is_formatted(self, mocked_locale,
                                                       mock_dt):
         convert_to_date_from_russian_written('24 февраля 2012 г.')
-        mocked_locale.assert_called_with(locale.LC_TIME, 'ru_RU')    
+        mocked_locale.assert_called_with(100, 'ru_RU')
 
     @patch('datetime.datetime')
     @patch('locale.setlocale')
