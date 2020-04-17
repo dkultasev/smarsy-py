@@ -343,8 +343,10 @@ class TestPageContent(unittest.TestCase):
         mocked_locale.assert_called_with(locale.LC_TIME, 'ru_RU')
 
     @patch('datetime.datetime')
-    def test_convert_to_date_called_with_expected_format_and_date(self,
-                                                                  mocked_date):
+    @patch('locale.setlocale')
+    def test_convert_to_date_called_with_expected_format_and_date(
+        self, mocked_locale, mocked_date
+         ):
         date_in_str = '24 февраля 2012 г.'
         convert_to_date_from_russian_written(date_in_str)
         mocked_date.strptime.assert_called_with('24 февраля 2012 г.',
