@@ -316,13 +316,13 @@ class TestsParse(unittest.TestCase):
                                                mock_headers,
                                                user_credentials,
                                                mock_request):
-        login(username='username', password='pass')
-        user_credentials.return_value = {'username': 'username',
-                                         'password': 'pass',
-                                         'language': 'UA'}
+        expected = {'username': 'username',
+                    'password': 'pass',
+                    'language': 'UA'}
+        login(username=expected.username, password=expected.password)
         mock_request.assert_called_with(mock_session.return_value,
                                         Urls.LOGIN.value,
-                                        user_credentials.return_value,
+                                        expected,
                                         mock_headers.return_value)
 
     @patch('requests.Session', return_value='session')
@@ -335,7 +335,7 @@ class TestsParse(unittest.TestCase):
                                          'password': 'pass',
                                          'language': 'UA'}
         self.assertEqual(login(username='username', password='pass'),
-                         'Smarsy Login')
+                         mock_request.return_value)
 
 
 class TestPageContent(unittest.TestCase):
@@ -372,7 +372,7 @@ class TestPageContent(unittest.TestCase):
     @patch('locale.setlocale')
     def test_convert_to_date_called_with_expected_format_and_date(
         self, mocked_locale, mocked_date
-         ):
+    ):
         date_in_str = '24 февраля 2012 г.'
         convert_to_date_from_russian_written(date_in_str)
         mocked_date.strptime.assert_called_with('24 февраля 2012 г.',
@@ -381,7 +381,7 @@ class TestPageContent(unittest.TestCase):
     @patch('locale.setlocale')
     def test_convert_to_date_raise_exeption_with_unexpected_date(
         self, mocked_locale
-         ):
+    ):
         date_in_str = '24 feb 2012'
         with self.assertRaises(ValueError) as error:
             convert_to_date_from_russian_written(date_in_str)
