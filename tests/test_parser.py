@@ -1,12 +1,13 @@
 from unittest.mock import patch, mock_open, MagicMock, Mock
 
 import unittest
-import requests
 import subprocess
 import sys
 import os
 import json
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..',
                                              'smarsy')))
@@ -16,7 +17,8 @@ from smarsy.parse import (perform_get_request, validate_title,
                        get_user_credentials, open_json_file,
                        perform_post_request, validate_object_keys,
                        get_headers, login, Urls,
-                       childs_page_return_right_login)  # noqa
+                       childs_page_return_right_login,
+                       convert_to_date_from_russian_written)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -49,10 +51,11 @@ class TestsGetPage(unittest.TestCase):
                                              self.default_url),
                          expected_text)
 
+    @patch('requests.HTTPError', Exception)
     def test_perform_get_request_resp_with_status_code_404_raises_exception(
             self):
         self.mocked_session.get.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, perform_get_request,
+        self.assertRaises(Exception, perform_get_request,
                           self.mocked_session, self.default_url)
 
     def test_perform_get_request_uses_provided_data_for_get_request(
@@ -118,10 +121,11 @@ class TestsPostRequest(unittest.TestCase):
                                                     data=None,
                                                     headers=expected_headers)
 
+    @patch('requests.HTTPError', Exception)
     def test_perform_post_request_resp_with_status_code_404_raises_exception(
             self):
         self.mocked_session.post.return_value.status_code = 404
-        self.assertRaises(requests.HTTPError, perform_post_request,
+        self.assertRaises(Exception, perform_post_request,
                           self.mocked_session, self.default_url)
 
     def test_perform_post_request_changes_response_encoding_to_provided(self):
@@ -333,6 +337,45 @@ class TestPageContent(unittest.TestCase):
         with self.assertRaises(ValueError) as error:
             childs_page_return_right_login(response_string, 'nologin')
         self.assertEqual('Invalid Smarsy Login', str(error.exception))
+
+    @patch('locale.LC_TIME', 100)
+    @patch('datetime.datetime')
+    @patch('locale.setlocale')
+    def test_ru_locale_is_used_when_date_is_formatted(self, mocked_locale,
+                                                      mock_dt):
+        convert_to_date_from_russian_written('24 февраля 2012 г.')
+        mocked_locale.assert_called_with(100, 'ru_RU')
+
+    @patch('datetime.datetime')
+    @patch('locale.setlocale')
+    def test_convert_to_date_called_with_expected_format_and_date(
+        self, mocked_locale, mocked_date
+         ):
+        date_in_str = '24 февраля 2012 г.'
+        convert_to_date_from_russian_written(date_in_str)
+        mocked_date.strptime.assert_called_with('24 февраля 2012 г.',
+                                                '%d %B %Y г.')
+
+    @patch('locale.setlocale')
+    def test_convert_to_date_raise_exeption_with_unexpected_date(
+        self, mocked_locale
+         ):
+        date_in_str = '24 feb 2012'
+        with self.assertRaises(ValueError) as error:
+            convert_to_date_from_russian_written(date_in_str)
+        self.assertEqual('Wrong date format', str(error.exception))
+
+
+    @patch('datetime.datetime')
+    @patch('locale.setlocale')
+    def test_convert_to_date_cast_result_to_date(self, mocked_locale,
+                                                 mock_dt):
+        expected_output = 'casted'
+        date_mock = Mock()
+        date_mock.date.return_value = expected_output
+        mock_dt.strptime.return_value = date_mock
+        self.assertEqual(convert_to_date_from_russian_written('', ''),
+                         expected_output)
 
 
 if __name__ == '__main__':
