@@ -6,7 +6,11 @@ import subprocess
 import sys
 import os
 import json
+import datetime
+import locale
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..',
                                              'smarsy')))
@@ -16,7 +20,8 @@ from smarsy.parse import (perform_get_request, validate_title,
                        get_user_credentials, open_json_file,
                        perform_post_request, validate_object_keys,
                        get_headers, login, Urls,
-                       childs_page_return_right_login)  # noqa
+                       childs_page_return_right_login,
+                       convert_to_date_from_russian_written)  # noqa
 
 
 class TestsGetPage(unittest.TestCase):
@@ -128,7 +133,7 @@ class TestsPostRequest(unittest.TestCase):
         expected_encoding = 'utf8'
         perform_post_request(self.mocked_session, self.default_url,
                              encoding=expected_encoding)
-        self.assertEqual(self.mocked_session.post.return_value.encoding, 
+        self.assertEqual(self.mocked_session.post.return_value.encoding,
                          expected_encoding)
 
 
@@ -329,6 +334,44 @@ class TestPageContent(unittest.TestCase):
         with self.assertRaises(ValueError) as error:
             childs_page_return_right_login(response_string, 'nologin')
         self.assertEqual('Invalid Smarsy Login', str(error.exception))
+
+    @patch('datetime.datetime')
+    @patch('locale.setlocale')
+    def test_ru_locale_is_used_when_date_is_formatted(self, mocked_locale,
+                                                      mock_dt):
+        convert_to_date_from_russian_written('24 февраля 2012 г.')
+        mocked_locale.assert_called_with(locale.LC_TIME, 'ru_RU')    
+
+    @patch('datetime.datetime')
+    @patch('locale.setlocale')
+    def test_convert_to_date_called_with_expected_format_and_date(
+        self, mocked_locale, mocked_date
+         ):
+        date_in_str = '24 февраля 2012 г.'
+        convert_to_date_from_russian_written(date_in_str)
+        mocked_date.strptime.assert_called_with('24 февраля 2012 г.',
+                                                '%d %B %Y г.')
+
+    @patch('locale.setlocale')
+    def test_convert_to_date_raise_exeption_with_unexpected_date(
+        self, mocked_locale
+         ):
+        date_in_str = '24 feb 2012'
+        with self.assertRaises(ValueError) as error:
+            convert_to_date_from_russian_written(date_in_str)
+        self.assertEqual('Wrong date format', str(error.exception))
+
+
+    @patch('datetime.datetime')
+    @patch('locale.setlocale')
+    def test_convert_to_date_cast_result_to_date(self, mocked_locale,
+                                                 mock_dt):
+        expected_output = 'casted'
+        date_mock = Mock()
+        date_mock.date.return_value = expected_output
+        mock_dt.strptime.return_value = date_mock
+        self.assertEqual(convert_to_date_from_russian_written('', ''),
+                         expected_output)
 
 
 if __name__ == '__main__':
