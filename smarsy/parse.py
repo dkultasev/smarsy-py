@@ -102,8 +102,11 @@ def childs_page_return_right_login(response_page, smarsy_login):
 
 def convert_to_date_from_russian_written(date_in_str, format='%d %B %Y г.'):
     locale.setlocale(locale.LC_TIME, 'ru_RU')
-    date_with_time = datetime.datetime.strptime(date_in_str, format)
-    return date_with_time.date()
+    try:
+        date_with_time = datetime.datetime.strptime(date_in_str, format)
+        return date_with_time.date()
+    except:
+        raise ValueError('Wrong date format')
 
 
 def login():

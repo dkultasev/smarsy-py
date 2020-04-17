@@ -340,7 +340,7 @@ class TestPageContent(unittest.TestCase):
     def test_ru_locale_is_used_when_date_is_formatted(self, mocked_locale,
                                                       mock_dt):
         convert_to_date_from_russian_written('24 февраля 2012 г.')
-        mocked_locale.assert_called_with(locale.LC_TIME, 'ru_RU')
+        mocked_locale.assert_called_with(locale.LC_TIME, 'ru_RU')    
 
     @patch('datetime.datetime')
     @patch('locale.setlocale')
@@ -351,6 +351,16 @@ class TestPageContent(unittest.TestCase):
         convert_to_date_from_russian_written(date_in_str)
         mocked_date.strptime.assert_called_with('24 февраля 2012 г.',
                                                 '%d %B %Y г.')
+
+    @patch('locale.setlocale')
+    def test_convert_to_date_raise_exeption_with_unexpected_date(
+        self, mocked_locale
+         ):
+        date_in_str = '24 feb 2012'
+        with self.assertRaises(ValueError) as error:
+            convert_to_date_from_russian_written(date_in_str)
+        self.assertEqual('Wrong date format', str(error.exception))
+
 
     @patch('datetime.datetime')
     @patch('locale.setlocale')
