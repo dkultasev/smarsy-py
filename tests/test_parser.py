@@ -5,6 +5,7 @@ import subprocess
 import sys
 import os
 import json
+import requests
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..')))
@@ -21,16 +22,24 @@ from smarsy.parse import (perform_get_request, validate_title,
                        convert_to_date_from_russian_written)  # noqa
 
 
-class TestsGetPage(unittest.TestCase):
+class TestRequests(unittest.TestCase):
+    @classmethod
     @patch('requests.Session')
-    def setUp(self, mocked_session):
-        self.default_url = 'http://www.smarsy.ua'
-        self.default_text = 'Informative text'
-        self.default_status_code = 200
-        mocked_session.get.return_value = Mock(
+    def setUpClass(cls, mocked_session):
+        cls.mocked_session = mocked_session
+        cls.default_url = 'http://www.smarsy.ua'
+        cls.default_text = 'Informative text'
+        cls.default_status_code = 200
+        cls.mocked_session.get.return_value = Mock(
+            status_code=cls.default_status_code,
+            text=cls.default_text)
+
+
+class TestsGetPage(TestRequests):
+    def setUp(self):
+        self.mocked_session.get.return_value = Mock(
             status_code=self.default_status_code,
             text=self.default_text)
-        self.mocked_session = mocked_session
 
     def test_perform_get_request_uses_provided_url_for_request_with_class(
             self):
