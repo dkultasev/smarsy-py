@@ -350,14 +350,16 @@ class TestPageContent(unittest.TestCase):
         mocked_date.strptime.assert_called_with('24 февраля 2012 г.',
                                                 '%d %B %Y г.')
 
-    # @patch('datetime.datetime')
-    # @patch('locale.setlocale')
-    # def test_convert_to_date_cast_result_to_date(self, mocked_locale,
-    #                                              mock_dt):
-    #     expected_output = 'casted'
-    #     mock_dt.strptime = MagicMock(date=MagicMock(expected_output))
-    #     self.assertEqual(convert_to_date_from_russian_written('', ''),
-    #                      expected_output)
+    @patch('datetime.datetime')
+    @patch('locale.setlocale')
+    def test_convert_to_date_cast_result_to_date(self, mocked_locale,
+                                                 mock_dt):
+        expected_output = 'casted'
+        date_mock = Mock()
+        date_mock.date.return_value = expected_output
+        mock_dt.strptime.return_value = date_mock
+        self.assertEqual(convert_to_date_from_russian_written('', ''),
+                         expected_output)
 
 
 if __name__ == '__main__':
