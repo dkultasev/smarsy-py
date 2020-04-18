@@ -5,7 +5,6 @@ import subprocess
 import sys
 import os
 import json
-import requests
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..')))
@@ -14,135 +13,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              'smarsy')))
 # excluding following line for linter as it complains that
 # from import is supposed to be at the top of the file
-from smarsy.parse import (perform_get_request, validate_title,
-                       get_user_credentials, open_json_file,
-                       perform_post_request, validate_object_keys,
-                       get_headers, login, Urls,
-                       childs_page_return_right_login,
-                       convert_to_date_from_russian_written)  # noqa
-
-
-class TestRequests(unittest.TestCase):
-    @classmethod
-    @patch('requests.Session')
-    def setUpClass(cls, mocked_session):
-        cls.mocked_session = mocked_session
-        cls.default_url = 'http://www.smarsy.ua'
-        cls.default_text = 'Informative text'
-        cls.default_status_code = 200
-        cls.mocked_session.get.return_value = Mock(
-            status_code=cls.default_status_code,
-            text=cls.default_text)
-
-
-class TestsGetPage(TestRequests):
-    def setUp(self):
-        self.mocked_session.get.return_value = Mock(
-            status_code=self.default_status_code,
-            text=self.default_text)
-
-    def test_perform_get_request_uses_provided_url_for_request_with_class(
-            self):
-        perform_get_request(self.mocked_session, self.default_url)
-        self.mocked_session.get.assert_called_with(url=self.default_url,
-                                                   params=None, headers=None)
-
-    def test_perform_get_request_uses_provided_url_for_request(self):
-        perform_get_request(self.mocked_session, self.default_url)
-        self.mocked_session.get.assert_called_with(url=self.default_url,
-                                                   params=None, headers=None)
-
-    def test_perform_get_request_returns_expected_text_on_valid_request(
-            self):
-        expected_text = 'This is login Page'
-        self.mocked_session.get(self.default_url).text = expected_text
-        self.assertEqual(perform_get_request(self.mocked_session,
-                                             self.default_url),
-                         expected_text)
-
-    @patch('requests.HTTPError', Exception)
-    def test_perform_get_request_resp_with_status_code_404_raises_exception(
-            self):
-        self.mocked_session.get.return_value.status_code = 404
-        self.assertRaises(Exception, perform_get_request,
-                          self.mocked_session, self.default_url)
-
-    def test_perform_get_request_uses_provided_data_for_get_request(
-            self):
-        expected_params = 'params'
-        perform_get_request(self.mocked_session, self.default_url,
-                            params=expected_params)
-        self.mocked_session.get.assert_called_with(url=self.default_url,
-                                                   params=expected_params,
-                                                   headers=None)
-
-    def test_perform_get_request_uses_provided_headers_for_get_request(
-            self):
-        expected_headers = {"a": 1}
-        perform_get_request(self.mocked_session, self.default_url,
-                            headers=expected_headers)
-        self.mocked_session.get.assert_called_with(url=self.default_url,
-                                                   params=None,
-                                                   headers=expected_headers)
-
-
-class TestsPostRequest(unittest.TestCase):
-
-    @patch('requests.Session')
-    def setUp(self, mocked_session):
-        self.default_url = 'http://www.smarsy.ua'
-        self.default_text = 'Informative text'
-        self.default_status_code = 200
-        mocked_session.post.return_value = Mock(
-            status_code=self.default_status_code,
-            text=self.default_text)
-        self.mocked_session = mocked_session
-
-    def test_perform_post_request_uses_provided_url_for_request(
-            self):
-        perform_post_request(self.mocked_session, self.default_url)
-        self.mocked_session.post.assert_called_with(url=self.default_url,
-                                                    data=None, headers=None)
-
-    def test_perform_post_request_returns_expected_text_on_valid_request(
-            self):
-        expected_text = 'some_text'
-        self.mocked_session.post(self.default_url).text = expected_text
-        self.assertEqual(perform_post_request(self.mocked_session,
-                                              self.default_url),
-                         expected_text)
-
-    def test_perform_post_request_uses_provided_data_for_post_request(
-            self):
-        expected_data = 'data'
-        perform_post_request(self.mocked_session, self.default_url,
-                             data=expected_data)
-        self.mocked_session.post.assert_called_with(url=self.default_url,
-                                                    data=expected_data,
-                                                    headers=None)
-
-    def test_perform_post_request_uses_provided_headers_for_post_request(
-            self):
-        expected_headers = {"a": 1}
-        perform_post_request(self.mocked_session, self.default_url,
-                             headers=expected_headers)
-        self.mocked_session.post.assert_called_with(url=self.default_url,
-                                                    data=None,
-                                                    headers=expected_headers)
-
-    @patch('requests.HTTPError', Exception)
-    def test_perform_post_request_resp_with_status_code_404_raises_exception(
-            self):
-        self.mocked_session.post.return_value.status_code = 404
-        self.assertRaises(Exception, perform_post_request,
-                          self.mocked_session, self.default_url)
-
-    def test_perform_post_request_changes_response_encoding_to_provided(self):
-        expected_encoding = 'utf8'
-        perform_post_request(self.mocked_session, self.default_url,
-                             encoding=expected_encoding)
-        self.assertEqual(self.mocked_session.post.return_value.encoding,
-                         expected_encoding)
+from smarsy.parse import (validate_title, get_user_credentials,
+                          open_json_file, validate_object_keys,
+                          get_headers, login, Urls,
+                          childs_page_return_right_login,
+                          convert_to_date_from_russian_written)  # noqa
 
 
 class TestsFileOperations(unittest.TestCase):
@@ -355,7 +230,7 @@ class TestPageContent(unittest.TestCase):
     @patch('locale.setlocale')
     def test_convert_to_date_called_with_expected_format_and_date(
         self, mocked_locale, mocked_date
-         ):
+    ):
         date_in_str = '24 февраля 2012 г.'
         convert_to_date_from_russian_written(date_in_str)
         mocked_date.strptime.assert_called_with('24 февраля 2012 г.',
@@ -364,12 +239,11 @@ class TestPageContent(unittest.TestCase):
     @patch('locale.setlocale')
     def test_convert_to_date_raise_exeption_with_unexpected_date(
         self, mocked_locale
-         ):
+    ):
         date_in_str = '24 feb 2012'
         with self.assertRaises(ValueError) as error:
             convert_to_date_from_russian_written(date_in_str)
         self.assertEqual('Wrong date format', str(error.exception))
-
 
     @patch('datetime.datetime')
     @patch('locale.setlocale')
