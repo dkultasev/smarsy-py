@@ -109,15 +109,21 @@ def convert_to_date_from_russian_written(date_in_str, format='%d %B %Y г.'):
         raise ValueError('Wrong date format')
 
 
-def login():
+def login(username=None, password=None):
     """
     Perform login to Smarsy.
 
     :returns: true on succesful login
     """
     session = requests.Session()
+    if username and password:
+        user_credentials = {'username': username,
+                            'password': password,
+                            'language': 'UA'}
+    else:
+        user_credentials = get_user_credentials()
     response = perform_post_request(session,
                                     Urls.LOGIN.value,
-                                    get_user_credentials(),
+                                    user_credentials,
                                     get_headers())
     return response

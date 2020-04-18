@@ -195,6 +195,32 @@ class TestsParse(unittest.TestCase):
             validate_object_keys(keys_list, creds)
         self.assertEqual('Key is empty', str(ke.exception))
 
+    @patch('requests.Session', return_value='session')
+    def test_login_with_params_uses_in_request(self, mock_session,
+                                               mock_headers,
+                                               user_credentials,
+                                               mock_request):
+        expected = {'username': 'username',
+                    'password': 'pass',
+                    'language': 'UA'}
+        login(username=expected['username'], password=expected['password'])
+        mock_request.assert_called_with(mock_session.return_value,
+                                        Urls.LOGIN.value,
+                                        expected,
+                                        mock_headers.return_value)
+
+    @patch('requests.Session', return_value='session')
+    def test_login_with_params_returns_post_request_text(self,
+                                                         mock_session,
+                                                         mock_headers,
+                                                         user_credentials,
+                                                         mock_request):
+        user_credentials.return_value = {'username': 'username',
+                                         'password': 'pass',
+                                         'language': 'UA'}
+        self.assertEqual(login(username='username', password='pass'),
+                         mock_request.return_value)
+
 
 class TestPageContent(unittest.TestCase):
 
