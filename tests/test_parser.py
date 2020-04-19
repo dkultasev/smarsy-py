@@ -284,7 +284,8 @@ class TestParseParentPage(unittest.TestCase):
         parent_page_content_to_object(html)
         self.assertEqual(mocked_print.call_count, 1)
 
-    @patch('smarsy.parse.convert_to_date_from_russian_written', return_value='1983-04-30')
+    @patch('smarsy.parse.convert_to_date_from_russian_written', 
+           return_value='1983-04-30')
     def test_parent_page_content_return_parent_object(self, mock_convert_date):
         html = '<TD><TABLE><TR><TD valign=top>\
         <img src="https://smarsy.ua/images/mypage/parent_1.png">\
