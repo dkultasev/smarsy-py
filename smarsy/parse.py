@@ -121,3 +121,31 @@ def login():
                                     get_user_credentials(),
                                     get_headers())
     return response
+
+
+def parent_page_content_to_object(html):
+    try:
+        soup = BeautifulSoup(html, 'html.parser')
+        try:
+            parent_tab = soup.find('td').find('table')
+            parents = []
+            for parent in parent_tab.children:
+                parent_dict = {}
+                parent_img = parent.find('td', valign="top").img['src']
+                parent_dict['parent_img'] = parent_img
+                parents_name = parent.find(
+                    'td', class_="username").text.split(' ')
+                parent_dict['parent_name'] = parents_name[0]
+                parent_dict['parent_surname'] = parents_name[1]
+                parent_dict['parent_middlename'] = parents_name[2]
+                parent_dict['parent_type'] = parents_name[3][1:-1]
+                parent_dict['parent_birth_date'] = \
+                    str(convert_to_date_from_russian_written(
+                        parent.find('td', class_="userdata").text
+                        ))
+                parents.append(parent_dict)
+            return parents
+        except AttributeError:
+            print('Wrong HTML format')
+    except:
+        raise ValueError('Wrong file format')

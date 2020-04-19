@@ -17,7 +17,8 @@ from smarsy.parse import (validate_title, get_user_credentials,
                           open_json_file, validate_object_keys,
                           get_headers, login, Urls,
                           childs_page_return_right_login,
-                          convert_to_date_from_russian_written)  # noqa
+                          convert_to_date_from_russian_written,
+                          parent_page_content_to_object)  # noqa
 
 
 class TestsFileOperations(unittest.TestCase):
@@ -255,6 +256,56 @@ class TestPageContent(unittest.TestCase):
         mock_dt.strptime.return_value = date_mock
         self.assertEqual(convert_to_date_from_russian_written('', ''),
                          expected_output)
+
+
+class TestParseParentPage(unittest.TestCase):
+    @patch('smarsy.parse.BeautifulSoup')
+    def test_parent_page_content_called_with_expected_html(self,
+                                                           mocked_soup):
+        html = 'some html'
+        parent_page_content_to_object(html)
+        mocked_soup.assert_called_with(html, 'html.parser')
+
+    def test_parent_page_content_raise_exeption_with_wrong_file_format(self):
+        html = 12344
+        with self.assertRaises(ValueError) as error:
+            parent_page_content_to_object(html)
+        self.assertEqual('Wrong file format', str(error.exception))
+
+    @patch('builtins.print')
+    @patch('smarsy.parse.parent_page_content_to_object')
+    def test_parent_page_content_raise_exeption_with_wrong_html(
+            self, mocked_parent_tab, mocked_print):
+        """
+        It works in any fragment if the expected HTML tag is not found
+        """
+        html = '<tr></tr> some html'
+        mocked_parent_tab.side_effect = AttributeError()
+        parent_page_content_to_object(html)
+        self.assertEqual(mocked_print.call_count, 1)
+
+    def test_parent_page_content_return_parent_object(self):
+        html = '<TD><TABLE><TR><TD valign=top>\
+        <img src="https://smarsy.ua/images/mypage/parent_1.png">\
+        </TD><TD><TABLE><TR>\
+        <TD class="username">Инокентий Петрушкин Акардеонович (Папа)\
+        </TD></TR><TR><TD class="userdata">30 апреля 1983 г.</TD></TR>\
+        </TABLE></TD></TR><TR><TD valign=top>\
+        <img src="https://smarsy.ua/images/mypage/parent_2.png">\
+        </TD><TD><TABLE><TR>\
+        <TD class="username">Пелагея Пупкина Васильевна (Мама)\
+        </TD></TR><TR><TD class="userdata">1 апреля 1900 г.</TD></TR>\
+        </TABLE></TD></TR></TABLE><TABLE></TABLE><TABLE></TABLE></TD>'
+        expected = {
+            'parent_img': 'https://smarsy.ua/images/mypage/parent_1.png',
+            'parent_name': 'Инокентий',
+            'parent_surname': 'Петрушкин',
+            'parent_middlename': 'Акардеонович',
+            'parent_type': 'Папа',
+            'parent_birth_date': '1983-04-30',
+        }
+        actual = parent_page_content_to_object(html)[0]
+        self.assertDictEqual(actual, expected)
 
 
 if __name__ == '__main__':
