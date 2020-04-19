@@ -284,7 +284,8 @@ class TestParseParentPage(unittest.TestCase):
         parent_page_content_to_object(html)
         self.assertEqual(mocked_print.call_count, 1)
 
-    def test_parent_page_content_return_parent_object(self):
+    @patch('locale.setlocale')
+    def test_parent_page_content_return_parent_object(self, mock_locale):
         html = '<TD><TABLE><TR><TD valign=top>\
         <img src="https://smarsy.ua/images/mypage/parent_1.png">\
         </TD><TD><TABLE><TR>\
