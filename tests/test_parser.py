@@ -284,8 +284,8 @@ class TestParseParentPage(unittest.TestCase):
         parent_page_content_to_object(html)
         self.assertEqual(mocked_print.call_count, 1)
 
-    @patch('locale.setlocale')
-    def test_parent_page_content_return_parent_object(self, mock_locale):
+    @patch('smarsy.parse.convert_to_date_from_russian_written')
+    def test_parent_page_content_return_parent_object(self, mock_convert_date):
         html = '<TD><TABLE><TR><TD valign=top>\
         <img src="https://smarsy.ua/images/mypage/parent_1.png">\
         </TD><TD><TABLE><TR>\
