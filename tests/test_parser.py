@@ -19,7 +19,7 @@ from smarsy.parse import (validate_title, get_user_credentials,
                           childs_page_return_right_login,
                           convert_to_date_from_russian_written,
                           parent_page_content_to_object,
-                          bs_safeGet)  # noqa
+                          bs_safeget)  # noqa
 
 
 class TestsFileOperations(unittest.TestCase):
@@ -258,6 +258,20 @@ class TestPageContent(unittest.TestCase):
         self.assertEqual(convert_to_date_from_russian_written('', ''),
                          expected_output)
 
+@patch('bs4.BeautifulSoup')
+class TestBsSafe(unittest.TestCase):
+    def test_bs_salect_called_with_expected_tag(self, mocked_soup):
+        soup = mocked_soup('some html', 'html.parser')
+        selector = 'some_tag'
+        bs_safeget(soup, selector)
+        mocked_soup().select.assert_called_with(selector)
+
+    def test_bs_safeget_return_false_when_selector_is_missing(
+            self, mocked_soup):
+        mocked_soup.select.return_value = ''
+        selector = 'h1'
+        self.assertFalse(bs_safeget(mocked_soup, selector))
+
 
 class TestParseParentPage(unittest.TestCase):
     @patch('smarsy.parse.BeautifulSoup')
@@ -267,27 +281,14 @@ class TestParseParentPage(unittest.TestCase):
         parent_page_content_to_object(html)
         mocked_soup.assert_called_with(html, 'html.parser')
 
-    @patch('bs4.BeautifulSoup', side_effect=ValueError)
+    @patch('bs4.BeautifulSoup')
     def test_parent_page_content_raise_exeption_with_wrong_file_format(
             self, mocked_soup):
         html = 12344
-        self.assertRaises(ValueError, parent_page_content_to_object, html)
-
-    @patch('bs4.BeautifulSoup')
-    def test_bs_safeGet_called_with_expected_tag(self, mocked_soup):
-        soup = mocked_soup('some html', 'html.parser')
-        selector = 'sdfs'
-        bs_safeGet(soup, selector)
-        mocked_soup().select.assert_called_with(selector, limit=1)
-
-    @patch('bs4.BeautifulSoup')
-    def test_bs_safeGet_raise_False_with_missing_selector(self, mocked_soup):
-        mocked_soup.select.return_value = ''
-        selector = 'h1'
-        self.assertFalse(bs_safeGet(mocked_soup, selector))
+        self.assertRaises(TypeError, parent_page_content_to_object, html)
 
     @patch('bs4.BeautifulSoup.select', return_value='')
-    def test_parent_page_content_raise_false_with_wrong_parent_tab(
+    def test_parent_page_content_return_false_with_wrong_parent_tab(
             self, mocked_soup_select):
         html = '<tr></tr>'
         parent_page_content_to_object(html)

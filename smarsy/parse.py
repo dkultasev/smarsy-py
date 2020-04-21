@@ -126,10 +126,10 @@ def login():
 def bs_safeget(soup, selector):
     """
         Utility function used to get a content string from a
-        Beautiful Soup object and a selector. Returns an False
+        Beautiful Soup object and a selector. Returns False
         if no object is found for the given selector
         """
-    selectedElems = soup.select(selector, limit=1)
+    selectedElems = soup.select(selector)
     if selectedElems is not None and len(selectedElems) > 0:
         return selectedElems[0]
     return False
@@ -162,4 +162,4 @@ def parent_page_content_to_object(html):
             return False
         return parents
     except:
-        raise ValueError('Wrong file format')
+        raise TypeError('Wrong file format')
