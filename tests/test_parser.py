@@ -18,7 +18,8 @@ from smarsy.parse import (validate_title, get_user_credentials,
                           get_headers, login, Urls,
                           childs_page_return_right_login,
                           convert_to_date_from_russian_written,
-                          parent_page_content_to_object)  # noqa
+                          parent_page_content_to_object,
+                          bs_safeGet)  # noqa
 
 
 class TestsFileOperations(unittest.TestCase):
@@ -262,7 +263,7 @@ class TestParseParentPage(unittest.TestCase):
     @patch('smarsy.parse.BeautifulSoup')
     def test_parent_page_content_called_with_expected_html(self,
                                                            mocked_soup):
-        html = 'some html'
+        html = '<tr></tr>'
         parent_page_content_to_object(html)
         mocked_soup.assert_called_with(html, 'html.parser')
 
@@ -272,20 +273,30 @@ class TestParseParentPage(unittest.TestCase):
         html = 12344
         self.assertRaises(ValueError, parent_page_content_to_object, html)
 
-    @patch('builtins.print')
-    @patch('bs4.BeautifulSoup', side_effect=AttributeError)
-    def test_parent_page_content_raise_exeption_with_wrong_html(
-            self, mocked_parent_tab, mocked_print):
-        """
-        It works in any fragment if the expected HTML tag is not found
-        """
-        html = '<tr></tr> some html'
-        parent_page_content_to_object(html)
-        self.assertEqual(mocked_print.call_count, 1)
+    @patch('bs4.BeautifulSoup')
+    def test_bs_safeGet_called_with_expected_tag(self, mocked_soup):
+        soup = mocked_soup('some html', 'html.parser')
+        selector = 'sdfs'
+        bs_safeGet(soup, selector)
+        mocked_soup().select.assert_called_with(selector, limit=1)
 
-    @patch('smarsy.parse.convert_to_date_from_russian_written', 
+    @patch('bs4.BeautifulSoup')
+    def test_bs_safeGet_raise_False_with_missing_selector(self, mocked_soup):
+        mocked_soup.select.return_value = ''
+        selector = 'h1'
+        self.assertFalse(bs_safeGet(mocked_soup, selector))
+
+    @patch('bs4.BeautifulSoup.select', return_value='')
+    def test_parent_page_content_raise_false_with_wrong_parent_tab(
+            self, mocked_soup_select):
+        html = '<tr></tr>'
+        parent_page_content_to_object(html)
+        self.assertFalse(parent_page_content_to_object(html))
+
+    @patch('smarsy.parse.convert_to_date_from_russian_written',
            return_value='1983-04-30')
-    def test_parent_page_content_return_parent_object(self, mock_convert_date):
+    def test_parent_page_content_return_parent_object(
+            self, mock_convert_date):
         html = '<TD><TABLE><TR><TD valign=top>\
         <img src="https://smarsy.ua/images/mypage/parent_1.png">\
         </TD><TD><TABLE><TR>\

@@ -123,28 +123,43 @@ def login():
     return response
 
 
+def bs_safeGet(soup, selector):
+    """
+        Utility function used to get a content string from a
+        Beautiful Soup object and a selector. Returns an empty
+        string if no object is found for the given selector
+        """
+    selectedElems = soup.select(selector, limit=1)
+    if selectedElems is not None and len(selectedElems) > 0:
+        return selectedElems[0]
+    return False
+
+
 def parent_page_content_to_object(html):
     try:
         soup = BeautifulSoup(html, 'html.parser')
-        parent_tab = soup.find('td').find('table')
-        parents = []
-        for parent in parent_tab.children:
-            parent_dict = {}
-            parent_img = parent.find('td', valign="top").img['src']
-            parent_dict['parent_img'] = parent_img
-            parents_name = parent.find(
-                    'td', class_="username").text.split(' ')
-            parent_dict['parent_name'] = parents_name[0]
-            parent_dict['parent_surname'] = parents_name[1]
-            parent_dict['parent_middlename'] = parents_name[2]
-            parent_dict['parent_type'] = parents_name[3][1:-1]
-            parent_dict['parent_birth_date'] = \
-                str(convert_to_date_from_russian_written(
-                        parent.find('td', class_="userdata").text
-                        ))
-            parents.append(parent_dict)
+        parent_tab = bs_safeGet(soup, 'table')
+        if parent_tab:
+            parents = []
+            for parent in parent_tab.children:
+                parent_dict = {}
+                parent_img = bs_safeGet(parent, '[valign=top]').img['src']
+                if parent_img:
+                    parent_dict['parent_img'] = parent_img
+                parents_name = bs_safeGet(parent, '.username').text.split(' ')
+                if parents_name:
+                    parent_dict['parent_name'] = parents_name[0]
+                    parent_dict['parent_surname'] = parents_name[1]
+                    parent_dict['parent_middlename'] = parents_name[2]
+                    parent_dict['parent_type'] = parents_name[3][1:-1]
+                parent_b_date = bs_safeGet(parent, '.userdata')
+                if parent_b_date:
+                    parent_dict['parent_birth_date'] = \
+                        str(convert_to_date_from_russian_written(
+                            parent_b_date.text))
+                parents.append(parent_dict)
+        else:
+            return False
         return parents
-    except AttributeError:
-        print('Wrong HTML format')
     except:
         raise ValueError('Wrong file format')
