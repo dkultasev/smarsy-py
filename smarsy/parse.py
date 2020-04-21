@@ -135,29 +135,42 @@ def bs_safeget(soup, selector):
     return False
 
 
-def parent_page_content_to_object(html):
+def create_parents_dict(parent_html) -> dict:
+    """
+    Function receive HTML and return parent dictionary with given keys
+    """
+    parent_dict = {}
+    parent_list = []
+    parents_keys = ['parent_img', 'parent_name', 'parent_surname',
+                    'parent_middlename', 'parent_type',
+                    'parent_birth_date']
+    parent_img = bs_safeget(parent_html, '[valign=top]').img['src']
+    if parent_img:
+        parent_list.append(parent_img)
+    parents_name = bs_safeget(parent_html, '.username').text.split(' ')
+    if parents_name:
+        parent_list += [value for value in (
+            parents_name[0], parents_name[1], parents_name[2],
+            parents_name[3][1:-1])]
+    parent_b_date = bs_safeget(parent_html, '.userdata')
+    if parent_b_date:
+        parent_list.append(
+            str(convert_to_date_from_russian_written(
+                parent_b_date.text)))
+    for parents_key, parent_value in zip(
+            parents_keys, parent_list):
+        parent_dict[parents_key] = parent_value
+    return parent_dict
+
+
+def parent_page_content_to_object(html) -> list:
     try:
         soup = BeautifulSoup(html, 'html.parser')
         parent_tab = bs_safeget(soup, 'table')
         if parent_tab:
             parents = []
             for parent in parent_tab.children:
-                parent_dict = {}
-                parent_img = bs_safeget(parent, '[valign=top]').img['src']
-                if parent_img:
-                    parent_dict['parent_img'] = parent_img
-                parents_name = bs_safeget(parent, '.username').text.split(' ')
-                if parents_name:
-                    parent_dict['parent_name'] = parents_name[0]
-                    parent_dict['parent_surname'] = parents_name[1]
-                    parent_dict['parent_middlename'] = parents_name[2]
-                    parent_dict['parent_type'] = parents_name[3][1:-1]
-                parent_b_date = bs_safeget(parent, '.userdata')
-                if parent_b_date:
-                    parent_dict['parent_birth_date'] = \
-                        str(convert_to_date_from_russian_written(
-                            parent_b_date.text))
-                parents.append(parent_dict)
+                parents.append(create_parents_dict(parent))
         else:
             return False
         return parents

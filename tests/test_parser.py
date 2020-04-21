@@ -258,6 +258,7 @@ class TestPageContent(unittest.TestCase):
         self.assertEqual(convert_to_date_from_russian_written('', ''),
                          expected_output)
 
+
 @patch('bs4.BeautifulSoup')
 class TestBsSafe(unittest.TestCase):
     def test_bs_salect_called_with_expected_tag(self, mocked_soup):
@@ -275,8 +276,7 @@ class TestBsSafe(unittest.TestCase):
 
 class TestParseParentPage(unittest.TestCase):
     @patch('smarsy.parse.BeautifulSoup')
-    def test_parent_page_content_called_with_expected_html(self,
-                                                           mocked_soup):
+    def test_parent_page_content_called_with_expected_html(self, mocked_soup):
         html = '<tr></tr>'
         parent_page_content_to_object(html)
         mocked_soup.assert_called_with(html, 'html.parser')
