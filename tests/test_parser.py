@@ -266,11 +266,11 @@ class TestParseParentPage(unittest.TestCase):
         parent_page_content_to_object(html)
         mocked_soup.assert_called_with(html, 'html.parser')
 
-    def test_parent_page_content_raise_exeption_with_wrong_file_format(self):
+    @patch('bs4.BeautifulSoup', side_effect=ValueError)
+    def test_parent_page_content_raise_exeption_with_wrong_file_format(
+            self, mocked_soup):
         html = 12344
-        with self.assertRaises(ValueError) as error:
-            parent_page_content_to_object(html)
-        self.assertEqual('Wrong file format', str(error.exception))
+        self.assertRaises(ValueError, parent_page_content_to_object, html)
 
     @patch('builtins.print')
     @patch('smarsy.parse.parent_page_content_to_object')
