@@ -273,14 +273,13 @@ class TestParseParentPage(unittest.TestCase):
         self.assertRaises(ValueError, parent_page_content_to_object, html)
 
     @patch('builtins.print')
-    @patch('smarsy.parse.parent_page_content_to_object')
+    @patch('bs4.BeautifulSoup', side_effect=AttributeError)
     def test_parent_page_content_raise_exeption_with_wrong_html(
             self, mocked_parent_tab, mocked_print):
         """
         It works in any fragment if the expected HTML tag is not found
         """
         html = '<tr></tr> some html'
-        mocked_parent_tab.side_effect = AttributeError()
         parent_page_content_to_object(html)
         self.assertEqual(mocked_print.call_count, 1)
 
