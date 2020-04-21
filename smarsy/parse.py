@@ -123,11 +123,11 @@ def login():
     return response
 
 
-def bs_safeGet(soup, selector):
+def bs_safeget(soup, selector):
     """
         Utility function used to get a content string from a
-        Beautiful Soup object and a selector. Returns an empty
-        string if no object is found for the given selector
+        Beautiful Soup object and a selector. Returns an False
+        if no object is found for the given selector
         """
     selectedElems = soup.select(selector, limit=1)
     if selectedElems is not None and len(selectedElems) > 0:
@@ -138,21 +138,21 @@ def bs_safeGet(soup, selector):
 def parent_page_content_to_object(html):
     try:
         soup = BeautifulSoup(html, 'html.parser')
-        parent_tab = bs_safeGet(soup, 'table')
+        parent_tab = bs_safeget(soup, 'table')
         if parent_tab:
             parents = []
             for parent in parent_tab.children:
                 parent_dict = {}
-                parent_img = bs_safeGet(parent, '[valign=top]').img['src']
+                parent_img = bs_safeget(parent, '[valign=top]').img['src']
                 if parent_img:
                     parent_dict['parent_img'] = parent_img
-                parents_name = bs_safeGet(parent, '.username').text.split(' ')
+                parents_name = bs_safeget(parent, '.username').text.split(' ')
                 if parents_name:
                     parent_dict['parent_name'] = parents_name[0]
                     parent_dict['parent_surname'] = parents_name[1]
                     parent_dict['parent_middlename'] = parents_name[2]
                     parent_dict['parent_type'] = parents_name[3][1:-1]
-                parent_b_date = bs_safeGet(parent, '.userdata')
+                parent_b_date = bs_safeget(parent, '.userdata')
                 if parent_b_date:
                     parent_dict['parent_birth_date'] = \
                         str(convert_to_date_from_russian_written(
