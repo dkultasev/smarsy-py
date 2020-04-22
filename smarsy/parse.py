@@ -140,30 +140,21 @@ def get_parents_img(parent_html, tag):
     Function receive: HTML, tag for search and return parents img URL
     """
     img_tag = bs_safeget(parent_html, tag)
-    img = bs_safeget(img_tag, 'img[src]')
-    if img is not None:
-        return img
-    return False
+    return bs_safeget(img_tag, 'img[src]')
 
 
 def get_parents_name(parent_html, tag):
     """
     Function receive: HTML, tag for search and return parents full name
     """
-    name = bs_safeget(parent_html, tag)
-    if name is not None:
-        return name
-    return False
+    return bs_safeget(parent_html, tag)
 
 
 def get_parents_b_date(parent_html, tag):
     """
     Function receive: HTML, tag for search and return parents b_date
     """
-    b_date = bs_safeget(parent_html, '.userdata')
-    if b_date is not None:
-        return b_date
-    return False
+    return bs_safeget(parent_html, tag)
 
 
 def create_parents_dict(parent_html) -> dict:
