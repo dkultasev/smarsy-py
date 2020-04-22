@@ -175,11 +175,12 @@ def create_parents_dict(parent_html) -> dict:
     parents_keys = ['parent_img', 'parent_name', 'parent_surname',
                     'parent_middlename', 'parent_type',
                     'parent_birth_date']
-    parent_img = get_parents_img(parent_html, '[valign=top]').attrs['src']
+    parent_img = get_parents_img(parent_html, '[valign=top]')
     if parent_img:
-        parent_list.append(parent_img)
-    parents_name = get_parents_name(parent_html, '.username').text.split(' ')
-    if parents_name:
+        parent_list.append(parent_img.attrs['src'])
+    parents_fullname = get_parents_name(parent_html, '.username')
+    if parents_fullname:
+        parents_name = parents_fullname.text.split(' ')
         parent_list.append(parents_name[0])
         parent_list.append(parents_name[1])
         parent_list.append(parents_name[2])
