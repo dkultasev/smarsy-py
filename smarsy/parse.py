@@ -199,12 +199,12 @@ def parent_page_content_to_object(html) -> list:
     try:
         soup = BeautifulSoup(html, 'html.parser')
         parent_tab = bs_safeget(soup, 'table')
+        parents = []
         if parent_tab:
-            parents = []
             for parent in parent_tab.children:
                 parents.append(create_parents_dict(parent))
         else:
-            return False
+            pass
         return parents
     except:
         raise TypeError('Wrong file format')

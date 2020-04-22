@@ -330,6 +330,12 @@ class TestParseParentPage(unittest.TestCase):
         parent_page_content_to_object(html)
         self.assertFalse(parent_page_content_to_object(html))
 
+    def test_parent_page_content_return_empty_list_with_no_data(self):
+        html = '<tr></tr>'
+        expected = []
+        actual = parent_page_content_to_object(html)
+        self.assertListEqual(actual, expected)
+
     @patch('smarsy.parse.convert_to_date_from_russian_written',
            return_value='1983-04-30')
     def test_parent_page_content_return_parent_object(
