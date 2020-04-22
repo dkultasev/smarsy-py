@@ -135,6 +135,37 @@ def bs_safeget(soup, selector):
     return False
 
 
+def get_parents_img(parent_html, tag):
+    """
+    Function receive: HTML, tag for search and return parents img URL
+    """
+    img_tag = bs_safeget(parent_html, tag)
+    img = bs_safeget(img_tag, 'img[src]')
+    if img is not None:
+        return img
+    return False
+
+
+def get_parents_name(parent_html, tag):
+    """
+    Function receive: HTML, tag for search and return parents full name
+    """
+    name = bs_safeget(parent_html, tag)
+    if name is not None:
+        return name
+    return False
+
+
+def get_parents_b_date(parent_html, tag):
+    """
+    Function receive: HTML, tag for search and return parents b_date
+    """
+    b_date = bs_safeget(parent_html, '.userdata')
+    if b_date is not None:
+        return b_date
+    return False
+
+
 def create_parents_dict(parent_html) -> dict:
     """
     Function receive HTML and return parent dictionary with given keys
@@ -144,19 +175,19 @@ def create_parents_dict(parent_html) -> dict:
     parents_keys = ['parent_img', 'parent_name', 'parent_surname',
                     'parent_middlename', 'parent_type',
                     'parent_birth_date']
-    parent_img = bs_safeget(parent_html, '[valign=top]').img['src']
+    parent_img = get_parents_img(parent_html, '[valign=top]').attrs['src']
     if parent_img:
         parent_list.append(parent_img)
-    parents_name = bs_safeget(parent_html, '.username').text.split(' ')
+    parents_name = get_parents_name(parent_html, '.username').text.split(' ')
     if parents_name:
-        parent_list += [value for value in (
-            parents_name[0], parents_name[1], parents_name[2],
-            parents_name[3][1:-1])]
-    parent_b_date = bs_safeget(parent_html, '.userdata')
+        parent_list.append(parents_name[0])
+        parent_list.append(parents_name[1])
+        parent_list.append(parents_name[2])
+        parent_list.append(parents_name[3][1:-1])
+    parent_b_date = get_parents_b_date(parent_html, '.userdata')
     if parent_b_date:
         parent_list.append(
-            str(convert_to_date_from_russian_written(
-                parent_b_date.text)))
+            str(convert_to_date_from_russian_written(parent_b_date.text)))
     for parents_key, parent_value in zip(
             parents_keys, parent_list):
         parent_dict[parents_key] = parent_value

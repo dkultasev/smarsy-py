@@ -19,7 +19,9 @@ from smarsy.parse import (validate_title, get_user_credentials,
                           childs_page_return_right_login,
                           convert_to_date_from_russian_written,
                           parent_page_content_to_object,
-                          bs_safeget)  # noqa
+                          bs_safeget, get_parents_img,
+                          get_parents_name,
+                          get_parents_b_date)  # noqa
 
 
 class TestsFileOperations(unittest.TestCase):
@@ -272,6 +274,40 @@ class TestBsSafe(unittest.TestCase):
         mocked_soup.select.return_value = ''
         selector = 'h1'
         self.assertFalse(bs_safeget(mocked_soup, selector))
+
+
+@patch('smarsy.parse.bs_safeget')
+class TestCreateParentsDict(unittest.TestCase):
+    def test_get_parents_img_return_expected_img(self, mocked_get):
+        mocked_get.return_value = 'some_img.jpg'
+        expected = 'some_img.jpg'
+        actual = get_parents_img('html', 'tag')
+        self.assertEqual(actual, expected)
+
+    def test_get_parents_img_return_false_with_none_img(self, mocked_get):
+        mocked_get.return_value = ''
+        self.assertFalse(get_parents_img('html', 'tag'))
+
+    def test_get_parents_name_return_expected_name(self, mocked_get):
+        mocked_get.return_value = 'name surname middlename type'
+        expected = 'name surname middlename type'
+        actual = get_parents_name('html', 'tag')
+        self.assertEqual(actual, expected)
+
+    def test_get_parents_name_return_false_with_none_name(self, mocked_get):
+        mocked_get.return_value = None
+        self.assertFalse(get_parents_name('html', 'tag'))
+
+    def test_get_parents_b_date_return_expected_b_date(self, mocked_get):
+        mocked_get.return_value = '1983-04-30'
+        expected = '1983-04-30'
+        actual = get_parents_b_date('html', 'tag')
+        self.assertEqual(actual, expected)
+
+    def test_get_parents_b_date_return_false_with_none_b_date(
+            self, mocked_get):
+        mocked_get.return_value = 0
+        self.assertFalse(get_parents_b_date('html', 'tag'))
 
 
 class TestParseParentPage(unittest.TestCase):
