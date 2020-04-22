@@ -262,7 +262,7 @@ class TestPageContent(unittest.TestCase):
 
 
 class TestBsSafe(unittest.TestCase):
-    def test_bs_salect_return_expected_text(self):
+    def test_bs_safeget_return_expected_text(self):
         mocked_soup = MagicMock()
         selector = 'some_tag'
         mocked_soup.select.return_value = ['some text']
