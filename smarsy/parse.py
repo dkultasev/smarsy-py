@@ -123,38 +123,41 @@ def login():
     return response
 
 
-def bs_safeget(soup, selector):
+def bs_safeget(soup, *args):
     """
         Utility function used to get a content string from a
-        Beautiful Soup object and a selector. Returns False
+        Beautiful Soup object and tuple of selectors. Returns False
         if no object is found for the given selector
         """
-    selectedElems = soup.select(selector)
+    if len(args) == 1:
+        selectedElems = soup.select(args[0])
+    else:
+        for arg in args:
+            selectedElems = soup.select(arg)
     if selectedElems is not None and len(selectedElems) > 0:
         return selectedElems[0]
     return False
 
 
-def get_parents_img(parent_html, tag):
+def get_parents_img(parent_html, *args):
     """
-    Function receive: HTML, tag for search and return parents img URL
+    Function receive: HTML, tags for search and return parents img URL
     """
-    img_tag = bs_safeget(parent_html, tag)
-    return bs_safeget(img_tag, 'img[src]')
+    return bs_safeget(parent_html, *args)
 
 
-def get_parents_name(parent_html, tag):
+def get_parents_name(parent_html, *args):
     """
-    Function receive: HTML, tag for search and return parents full name
+    Function receive: HTML, tags for search and return parents full name
     """
-    return bs_safeget(parent_html, tag)
+    return bs_safeget(parent_html, *args)
 
 
-def get_parents_b_date(parent_html, tag):
+def get_parents_b_date(parent_html, *args):
     """
-    Function receive: HTML, tag for search and return parents b_date
+    Function receive: HTML, tags for search and return parents b_date
     """
-    return bs_safeget(parent_html, tag)
+    return bs_safeget(parent_html, *args)
 
 
 def create_parents_dict(parent_html) -> dict:
@@ -166,7 +169,7 @@ def create_parents_dict(parent_html) -> dict:
     parents_keys = ['parent_img', 'parent_name', 'parent_surname',
                     'parent_middlename', 'parent_type',
                     'parent_birth_date']
-    parent_img = get_parents_img(parent_html, '[valign=top]')
+    parent_img = get_parents_img(parent_html, '[valign=top]', 'img[src]')
     if parent_img:
         parent_list.append(parent_img.attrs['src'])
     parents_fullname = get_parents_name(parent_html, '.username')
