@@ -259,16 +259,16 @@ class TestPageContent(unittest.TestCase):
                          expected_output)
 
 
-@patch('bs4.BeautifulSoup')
 class TestBsSafe(unittest.TestCase):
-    def test_bs_salect_called_with_expected_tag(self, mocked_soup):
-        soup = mocked_soup('some html', 'html.parser')
+    def test_bs_salect_called_with_expected_tag(self):
+        mocked_soup = MagicMock()
         selector = 'some_tag'
-        bs_safeget(soup, selector)
-        mocked_soup().select.assert_called_with(selector)
+        mocked_soup.select.return_value = ['some text']
+        self.assertEqual(bs_safeget(mocked_soup, selector), 'some text')
 
     def test_bs_safeget_return_false_when_selector_is_missing(
-            self, mocked_soup):
+            self):
+        mocked_soup = Mock()
         mocked_soup.select.return_value = ''
         selector = 'h1'
         self.assertFalse(bs_safeget(mocked_soup, selector))
