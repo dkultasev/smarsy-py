@@ -131,5 +131,5 @@ def login(username=None, password=None):
 
 class Person(object):
     def __init__(self, *args):
-        pass
-    
+        (self.first_name, self.second_name, self.middle_name, self.person_type,
+         self.birth_date) = args
