@@ -129,11 +129,8 @@ def bs_safeget(soup, *args):
         Beautiful Soup object and tuple of selectors. Returns False
         if no object is found for the given selector
         """
-    if len(args) == 1:
-        selectedElems = soup.select(args[0])
-    else:
-        for arg in args:
-            selectedElems = soup.select(arg)
+    for arg in args:
+        selectedElems = soup.select(arg)
     if selectedElems is not None and len(selectedElems) > 0:
         return selectedElems[0]
     return False
@@ -169,17 +166,17 @@ def create_parents_dict(parent_html) -> dict:
     parents_keys = ['parent_img', 'parent_name', 'parent_surname',
                     'parent_middlename', 'parent_type',
                     'parent_birth_date']
-    parent_img = get_parents_img(parent_html, '[valign=top]', 'img[src]')
+    parent_img = bs_safeget(parent_html, '[valign=top]', 'img[src]')
     if parent_img:
         parent_list.append(parent_img.attrs['src'])
-    parents_fullname = get_parents_name(parent_html, '.username')
+    parents_fullname = bs_safeget(parent_html, '.username')
     if parents_fullname:
         parents_name = parents_fullname.text.split(' ')
         parent_list.append(parents_name[0])
         parent_list.append(parents_name[1])
         parent_list.append(parents_name[2])
         parent_list.append(parents_name[3][1:-1])
-    parent_b_date = get_parents_b_date(parent_html, '.userdata')
+    parent_b_date = bs_safeget(parent_html, '.userdata')
     if parent_b_date:
         parent_list.append(
             str(convert_to_date_from_russian_written(parent_b_date.text)))
