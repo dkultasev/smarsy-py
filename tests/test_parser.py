@@ -285,7 +285,7 @@ class TestPageContent(unittest.TestCase):
 
 class TestPersonClass(unittest.TestCase):
     def test_person_instance_created(self):
-        pass
+        person = smarsy.parse.Parson()
 
 
 if __name__ == '__main__':
