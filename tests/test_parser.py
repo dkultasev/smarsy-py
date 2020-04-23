@@ -261,7 +261,7 @@ class TestPageContent(unittest.TestCase):
                          expected_output)
 
 
-class TestBsSafe(unittest.TestCase):
+class Test_bs_safeget(unittest.TestCase):
     def test_bs_safeget_return_expected_text(self):
         mocked_soup = MagicMock()
         selector = 'some_tag'
@@ -330,8 +330,11 @@ class TestParseParentPage(unittest.TestCase):
         parent_page_content_to_object(html)
         self.assertFalse(parent_page_content_to_object(html))
 
-    def test_parent_page_content_return_empty_list_with_no_data(self):
-        html = '<tr></tr>'
+    @patch('smarsy.parse.bs_safeget', return_value=None)
+    def test_parent_page_content_return_empty_list_with_no_data(
+            self, mocked_safeget):
+        html = '<TD><TABLE><TR><TD valign=top>\
+        <img src="ghhjhg"></TD></TR></TABLE></TD>'
         expected = []
         actual = parent_page_content_to_object(html)
         self.assertListEqual(actual, expected)

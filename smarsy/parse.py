@@ -197,8 +197,6 @@ def parent_page_content_to_object(html) -> list:
         if parent_tab:
             for parent in parent_tab.children:
                 parents.append(create_parents_dict(parent))
-        else:
-            pass
         return parents
     except:
         raise TypeError('Wrong file format')
