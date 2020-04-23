@@ -292,6 +292,13 @@ class TestCreateParentsDict(unittest.TestCase):
         create_parents_dict('html')
         self.assertTrue(mock_hasattr.call_count, 1)
 
+    # def test_list_append(self, mocked_get):
+    #     mocks = Mock(spec=list)
+    #     mocks.append(3)
+    #     mocked_get.return_value = 'some_img.jpg'
+    #     create_parents_dict('html')
+    #     self.assertTrue(mocks.append.call_count, 1)
+
 
 class TestParseParentPage(unittest.TestCase):
     @patch('smarsy.parse.BeautifulSoup')
