@@ -140,29 +140,33 @@ def create_parents_dict(parent_html) -> dict:
     """
     Function receive HTML and return parent dictionary with given keys
     """
-    parent_dict = {}
-    parent_list = []
-    parents_keys = ['parent_img', 'parent_name', 'parent_surname',
-                    'parent_middlename', 'parent_type',
-                    'parent_birth_date']
     parent_img = bs_safeget(parent_html, '[valign=top]', 'img[src]')
+    # parent_dict = {}
+    # parent_list = []
+    # parents_keys = ['parent_img', 'parent_name', 'parent_surname',
+    #                 'parent_middlename', 'parent_type',
+    #                 'parent_birth_date']
     if parent_img:
-        parent_list.append(parent_img.attrs['src'])
-    parents_fullname = bs_safeget(parent_html, '.username')
-    if parents_fullname:
-        parents_name = parents_fullname.text.split(' ')
-        parent_list.append(parents_name[0])
-        parent_list.append(parents_name[1])
-        parent_list.append(parents_name[2])
-        parent_list.append(parents_name[3][1:-1])
-    parent_b_date = bs_safeget(parent_html, '.userdata')
-    if parent_b_date:
-        parent_list.append(
-            str(convert_to_date_from_russian_written(parent_b_date.text)))
-    for parents_key, parent_value in zip(
-            parents_keys, parent_list):
-        parent_dict[parents_key] = parent_value
-    return parent_dict
+        if hasattr(parent_img, 'src'):
+            pass
+        else:
+            pass
+        # parent_list.append(parent_img.attrs['src'])
+    # parents_fullname = bs_safeget(parent_html, '.username')
+    # if parents_fullname:
+    #     parents_name = parents_fullname.text.split(' ')
+    #     parent_list.append(parents_name[0])
+    #     parent_list.append(parents_name[1])
+    #     parent_list.append(parents_name[2])
+    #     parent_list.append(parents_name[3][1:-1])
+    # parent_b_date = bs_safeget(parent_html, '.userdata')
+    # if parent_b_date:
+    #     parent_list.append(
+    #         str(convert_to_date_from_russian_written(parent_b_date.text)))
+    # for parents_key, parent_value in zip(
+    #         parents_keys, parent_list):
+    #     parent_dict[parents_key] = parent_value
+    # return parent_dict
 
 
 def parent_page_content_to_object(html) -> list:

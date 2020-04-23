@@ -19,7 +19,7 @@ from smarsy.parse import (validate_title, get_user_credentials,
                           childs_page_return_right_login,
                           convert_to_date_from_russian_written,
                           parent_page_content_to_object,
-                          bs_safeget)  # noqa
+                          bs_safeget, create_parents_dict)  # noqa
 
 
 class TestsFileOperations(unittest.TestCase):
@@ -276,36 +276,21 @@ class Test_bs_safeget(unittest.TestCase):
 
 @patch('smarsy.parse.bs_safeget')
 class TestCreateParentsDict(unittest.TestCase):
-    def test_get_parents_img_return_expected_img(self, mocked_get):
-        mocked_get.return_value = 'some_img.jpg'
-        expected = 'some_img.jpg'
-        actual = get_parents_img('html', 'tag')
-        self.assertEqual(actual, expected)
-
-    def test_get_parents_img_return_false_with_none_img(self, mocked_get):
-        mocked_get.return_value = ''
-        self.assertFalse(get_parents_img('html', 'tag'))
-
-    def test_get_parents_name_return_expected_name(self, mocked_get):
-        mocked_get.return_value = 'name surname middlename type'
-        expected = 'name surname middlename type'
-        actual = get_parents_name('html', 'tag')
-        self.assertEqual(actual, expected)
-
-    def test_get_parents_name_return_false_with_none_name(self, mocked_get):
-        mocked_get.return_value = None
-        self.assertFalse(get_parents_name('html', 'tag'))
-
-    def test_get_parents_b_date_return_expected_b_date(self, mocked_get):
-        mocked_get.return_value = '1983-04-30'
-        expected = '1983-04-30'
-        actual = get_parents_b_date('html', 'tag')
-        self.assertEqual(actual, expected)
-
-    def test_get_parents_b_date_return_false_with_none_b_date(
+    def test_bs_safeget_called_with_expected_html_for_img_getting(
             self, mocked_get):
-        mocked_get.return_value = 0
-        self.assertFalse(get_parents_b_date('html', 'tag'))
+        tag1, tag2 = '[valign=top]', 'img[src]'
+        create_parents_dict('html')
+        mocked_get.assert_called_with('html', tag1, tag2)
+
+    def test_create_parents_dict_return_false_with_none_img(self, mocked_get):
+        mocked_get.return_value = None
+        self.assertFalse(create_parents_dict('html'))
+
+    @patch('builtins.hasattr')
+    def test_bs_safeget_return_expected_img(self, mock_print, mocked_get):
+        mocked_get.return_value = 'some_img.jpg'
+        create_parents_dict('html')
+        self.assertTrue(mock_print.call_count, 1)
 
 
 class TestParseParentPage(unittest.TestCase):
