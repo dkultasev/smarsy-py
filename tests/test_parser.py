@@ -283,6 +283,11 @@ class TestPageContent(unittest.TestCase):
                          expected_output)
 
 
+class TestPersonClass(unittest.TestCase):
+    def test_person_instance_created(self):
+        pass
+
+
 if __name__ == '__main__':
     if '--unittest' in sys.argv:
         subprocess.call([sys.executable, '-m', 'unittest', 'discover'])
