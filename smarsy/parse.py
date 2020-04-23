@@ -127,3 +127,7 @@ def login(username=None, password=None):
                                     user_credentials,
                                     get_headers())
     return response
+
+
+class Person(object):
+    pass
