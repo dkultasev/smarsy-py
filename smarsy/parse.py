@@ -148,9 +148,9 @@ def create_parents_dict(parent_html) -> dict:
     #                 'parent_birth_date']
     if parent_img:
         if hasattr(parent_img, 'src'):
-            pass
+            print('True')
         else:
-            pass
+            print('False')
         # parent_list.append(parent_img.attrs['src'])
     # parents_fullname = bs_safeget(parent_html, '.username')
     # if parents_fullname:
