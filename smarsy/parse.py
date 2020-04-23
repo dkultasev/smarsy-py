@@ -136,27 +136,6 @@ def bs_safeget(soup, *args):
     return False
 
 
-def get_parents_img(parent_html, *args):
-    """
-    Function receive: HTML, tags for search and return parents img URL
-    """
-    return bs_safeget(parent_html, *args)
-
-
-def get_parents_name(parent_html, *args):
-    """
-    Function receive: HTML, tags for search and return parents full name
-    """
-    return bs_safeget(parent_html, *args)
-
-
-def get_parents_b_date(parent_html, *args):
-    """
-    Function receive: HTML, tags for search and return parents b_date
-    """
-    return bs_safeget(parent_html, *args)
-
-
 def create_parents_dict(parent_html) -> dict:
     """
     Function receive HTML and return parent dictionary with given keys

@@ -19,9 +19,7 @@ from smarsy.parse import (validate_title, get_user_credentials,
                           childs_page_return_right_login,
                           convert_to_date_from_russian_written,
                           parent_page_content_to_object,
-                          bs_safeget, get_parents_img,
-                          get_parents_name,
-                          get_parents_b_date)  # noqa
+                          bs_safeget)  # noqa
 
 
 class TestsFileOperations(unittest.TestCase):
