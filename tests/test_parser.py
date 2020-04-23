@@ -286,7 +286,8 @@ class TestPageContent(unittest.TestCase):
 
 class TestPersonClass(unittest.TestCase):
     def test_person_instance_created(self):
-        person = Person()
+        person = Person('Вася', 'Пупкин', 'Иванович', 'Деда', '30-02-2000')
+        self.assertEqual(person.first_name, 'Вася')
 
 
 if __name__ == '__main__':

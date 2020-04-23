@@ -130,4 +130,6 @@ def login(username=None, password=None):
 
 
 class Person(object):
-    pass
+    def __init__(self, *args):
+        pass
+    
