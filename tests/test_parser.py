@@ -260,11 +260,18 @@ class TestPageContent(unittest.TestCase):
 
 
 class Test_bs_safeget(unittest.TestCase):
-    def test_bs_safeget_return_expected_text(self):
+    def test_bs_safeget_return_expected_text_with_single_selector(self):
         mocked_soup = MagicMock()
         selector = 'some_tag'
         mocked_soup.select.return_value = ['some text']
         self.assertEqual(bs_safeget(mocked_soup, selector), 'some text')
+
+    def test_bs_safeget_return_expected_text_with_many_selectors(self):
+        mocked_soup = MagicMock()
+        selector1, selector2, selector3 = 'some_tag1', 'some_tag2', 'some_tag3'
+        mocked_soup.select.return_value = ['some text']
+        self.assertEqual(bs_safeget(mocked_soup, selector1, selector2,
+                                    selector3), 'some text')
 
     def test_bs_safeget_return_false_when_selectedElems_is_empty(
             self):
@@ -309,7 +316,7 @@ class TestParseParentPage(unittest.TestCase):
         self.assertEqual('Wrong file format', str(error.exception))
 
     @patch('smarsy.parse.BeautifulSoup.select', return_value='')
-    def test_parent_page_content_return_false_with_wrong_parent_tab(
+    def test_parent_page_content_return_false_with_empty_parent_tab(
             self, mocked_soup_select):
         html = '<tr></tr>'
         self.assertFalse(parent_page_content_to_object(html))
