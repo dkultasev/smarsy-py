@@ -130,6 +130,10 @@ def login(username=None, password=None):
 
 
 class Person(object):
-    def __init__(self, *args):
-        (self.first_name, self.second_name, self.middle_name, self.person_type,
-         self.birth_date) = args
+    def __init__(self, first_name, second_name,
+                 middle_name, person_type, birth_date):
+        self.first_name = first_name
+        self.second_name = second_name
+        self.middle_name = middle_name
+        self.person_type = person_type
+        self.birth_date = birth_date
