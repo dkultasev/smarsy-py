@@ -266,7 +266,7 @@ class Test_bs_safeget(unittest.TestCase):
         mocked_soup.select.return_value = ['some text']
         self.assertEqual(bs_safeget(mocked_soup, selector), 'some text')
 
-    def test_bs_safeget_return_false_when_selector_is_missing(
+    def test_bs_safeget_return_false_when_selectedElems_is_empty(
             self):
         mocked_soup = Mock()
         mocked_soup.select.return_value = ''
@@ -292,13 +292,6 @@ class TestCreateParentsDict(unittest.TestCase):
         create_parents_dict('html')
         self.assertTrue(mock_hasattr.call_count, 1)
 
-    # def test_list_append(self, mocked_get):
-    #     mocks = Mock(spec=list)
-    #     mocks.append(3)
-    #     mocked_get.return_value = 'some_img.jpg'
-    #     create_parents_dict('html')
-    #     self.assertTrue(mocks.append.call_count, 1)
-
 
 class TestParseParentPage(unittest.TestCase):
     @patch('smarsy.parse.BeautifulSoup')
@@ -308,7 +301,7 @@ class TestParseParentPage(unittest.TestCase):
         mocked_soup.assert_called_with(html, 'html.parser')
 
     @patch('smarsy.parse.BeautifulSoup', side_effect=TypeError)
-    def test_parent_page_content_raise_exeption_with_wrong_file_format(
+    def test_parent_page_content_raise_exeption_with_unexpected_html(
             self, mocked_soup):
         html = 12344
         with self.assertRaises(TypeError) as error:
@@ -319,7 +312,6 @@ class TestParseParentPage(unittest.TestCase):
     def test_parent_page_content_return_false_with_wrong_parent_tab(
             self, mocked_soup_select):
         html = '<tr></tr>'
-        parent_page_content_to_object(html)
         self.assertFalse(parent_page_content_to_object(html))
 
     @patch('smarsy.parse.bs_safeget', return_value=None)
@@ -331,31 +323,6 @@ class TestParseParentPage(unittest.TestCase):
         actual = parent_page_content_to_object(html)
         self.assertListEqual(actual, expected)
 
-    # @patch('smarsy.parse.convert_to_date_from_russian_written',
-    #        return_value='1983-04-30')
-    # def test_parent_page_content_return_parent_object(
-    #         self, mock_convert_date):
-    #     html = '<TD><TABLE><TR><TD valign=top>\
-    #     <img src="https://smarsy.ua/images/mypage/parent_1.png">\
-    #     </TD><TD><TABLE><TR>\
-    #     <TD class="username">Инокентий Петрушкин Акардеонович (Папа)\
-    #     </TD></TR><TR><TD class="userdata">30 апреля 1983 г.</TD></TR>\
-    #     </TABLE></TD></TR><TR><TD valign=top>\
-    #     <img src="https://smarsy.ua/images/mypage/parent_2.png">\
-    #     </TD><TD><TABLE><TR>\
-    #     <TD class="username">Пелагея Пупкина Васильевна (Мама)\
-    #     </TD></TR><TR><TD class="userdata">1 апреля 1900 г.</TD></TR>\
-    #     </TABLE></TD></TR></TABLE><TABLE></TABLE><TABLE></TABLE></TD>'
-    #     expected = {
-    #         'parent_img': 'https://smarsy.ua/images/mypage/parent_1.png',
-    #         'parent_name': 'Инокентий',
-    #         'parent_surname': 'Петрушкин',
-    #         'parent_middlename': 'Акардеонович',
-    #         'parent_type': 'Папа',
-    #         'parent_birth_date': '1983-04-30',
-    #     }
-    #     actual = parent_page_content_to_object(html)[0]
-    #     self.assertDictEqual(actual, expected)
 
 
 if __name__ == '__main__':
