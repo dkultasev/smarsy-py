@@ -18,7 +18,7 @@ from smarsy.parse import (validate_title, get_user_credentials,
                           get_headers, login, Urls,
                           childs_page_return_right_login,
                           convert_to_date_from_russian_written,
-                          Person)  # noqa
+                          )  # noqa
 
 
 class TestsFileOperations(unittest.TestCase):
@@ -282,16 +282,6 @@ class TestPageContent(unittest.TestCase):
         mock_dt.strptime.return_value = date_mock
         self.assertEqual(convert_to_date_from_russian_written('', ''),
                          expected_output)
-
-
-class TestPersonClass(unittest.TestCase):
-    def test_person_instance_created(self):
-        person = Person('Вася', 'Пупкин', 'Иванович', 'Деда', '30-02-2000')
-        self.assertEqual(person.first_name, 'Вася')
-        self.assertEqual(person.second_name, 'Пупкин')
-        self.assertEqual(person.middle_name, 'Иванович')
-        self.assertEqual(person.person_type, 'Деда')
-        self.assertEqual(person.birth_date, '30-02-2000')
 
 
 if __name__ == '__main__':
