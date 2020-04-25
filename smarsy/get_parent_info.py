@@ -33,6 +33,14 @@ class ParseParentData(object):
             return parents_tab
         return False
 
+    def get_parents_tab_chidren(self, parents_table_html):
+        """
+        Utility funtcion:
+            - Accepts parents table html and checks if it has children,
+              return children list_iterator object or False
+        """
+        pass
+
     def parse_logic(self):
         """
         Main class logic funtcion:
@@ -49,3 +57,6 @@ class ParseParentData(object):
         soup = self.get_bs_object()
         if soup:
             parents_tab = self.get_parents_table(soup)
+            if parents_tab:
+                parents_tab_chidren_list = self.get_parents_tab_chidren(
+                    parents_tab)
