@@ -2,7 +2,7 @@ import unittest
 import sys
 import os
 
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..')))
@@ -28,18 +28,18 @@ class TestParseParentData(unittest.TestCase):
 
 
 class TestGetPageSource(unittest.TestCase):
-    @patch('smarsy.get_parent_info.BeautifulSoup')
+    @patch('smarsy.get_parent_info.BeautifulSoup', new_callable=PropertyMock)
     def test_get_bs_object_called_with_expected_html(self, mocked_soup):
         html = '<tr></tr>'
         source_page = ParseParentData(html)
-        source_page.get_bs_object()
+        source_page.get_bs_object
         mocked_soup.assert_called_with(html, 'html.parser')
 
     @patch('smarsy.get_parent_info.BeautifulSoup', side_effect=TypeError)
     def test_get_bs_object_return_false_with_unexpected_html(
             self, mocked_soup):
         source_page = ParseParentData(12345)
-        self.assertFalse(source_page.get_bs_object())
+        self.assertFalse(source_page.get_bs_object)
 
 
 class TestGetParentsTab(unittest.TestCase):
@@ -71,22 +71,24 @@ class TestGetParentsTabChildren(unittest.TestCase):
 
     @patch('smarsy.get_parent_info.BeautifulSoup.children')
     def test_bs_select_called_with_expected_params(self, mocked_bs_children):
+        self.source_page.parse_logic()
         pass
 
     @patch('smarsy.get_parent_info.BeautifulSoup')
     def test_return_expected_html_if_children(self, mocked_bs):
-        pass
+        self.source_page.parse_logic()
 
     @patch('smarsy.get_parent_info.BeautifulSoup')
     def test_return_false_html_if_children_is_none(self, mocked_bs):
-        pass
+        self.source_page.parse_logic()
 
 
 class TestParseLogic(unittest.TestCase):
     def setUp(self):
         self.source_page = ParseParentData('some html')
 
-    @patch('smarsy.get_parent_info.ParseParentData.get_bs_object')
+    @patch('smarsy.get_parent_info.ParseParentData.get_bs_object',
+           new_callable=PropertyMock)
     def test_get_bs_object_called(self, mocked_bs):
         self.source_page.parse_logic()
         mocked_bs.assert_called_once()
@@ -99,7 +101,7 @@ class TestParseLogic(unittest.TestCase):
 
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_table')
     @patch('smarsy.get_parent_info.ParseParentData.get_bs_object',
-           return_value='some soup')
+           new_callable=PropertyMock, return_value='some soup')
     def test_get_parents_tab_called_with_expected_params(
             self, mocked_bs, mocked_get_parents_tab):
         soup = 'some soup'
@@ -108,7 +110,7 @@ class TestParseLogic(unittest.TestCase):
 
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_table')
     @patch('smarsy.get_parent_info.ParseParentData.get_bs_object',
-           return_value=False)
+           new_callable=PropertyMock, return_value=False)
     def test_get_parents_tab_not_called_if_soup_is_none(
             self, mocked_bs, mocked_get_parents_tab):
         self.source_page.parse_logic()

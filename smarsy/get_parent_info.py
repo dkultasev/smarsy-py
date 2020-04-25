@@ -10,6 +10,7 @@ class ParseParentData(object):
         self.html = html
         self.parentsdata = None
 
+    @property
     def get_bs_object(self):
         """
         Utility funtcion:
@@ -39,7 +40,7 @@ class ParseParentData(object):
             - Accepts parents table html and checks if it has children,
               return children list_iterator object or False
         """
-        pass
+        parents_tab_chidren = parents_table_html.children
 
     def parse_logic(self):
         """
@@ -54,7 +55,7 @@ class ParseParentData(object):
             'parent_birth_date'
             - Creates parents data
         """
-        soup = self.get_bs_object()
+        soup = self.get_bs_object
         if soup:
             parents_tab = self.get_parents_table(soup)
             if parents_tab:
