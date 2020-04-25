@@ -42,16 +42,51 @@ class TestGetPageSource(unittest.TestCase):
         self.assertFalse(source_page.get_bs_object())
 
 
-class TestParseLogic(unittest.TestCase):
-    @patch('smarsy.get_parent_info.ParseParentData.get_bs_object')
-    def test_get_bs_object_called(self, mocked_bs):
+class TestGetParentsTab(unittest.TestCase):
+    @patch('smarsy.get_parent_info.BeautifulSoup.select')
+    def test_bs_select_called_with_expected_params(self, mocked_bs_select):
         source_page = ParseParentData('some html')
         source_page.parse_logic()
+        mocked_bs_select.assert_called_with('table')
+
+
+class TestParseLogic(unittest.TestCase):
+    def setUp(self):
+        self.source_page = ParseParentData('some html')
+
+    @patch('smarsy.get_parent_info.ParseParentData.get_bs_object')
+    def test_get_bs_object_called(self, mocked_bs):
+        self.source_page.parse_logic()
         mocked_bs.assert_called_once()
 
     @patch('smarsy.get_parent_info.ParseParentData.get_bs_object',
            return_value=False)
     def test_parentsdata_is_empty_with_wrong_soup(self, mocked_bs):
+        self.source_page.parse_logic()
+        self.assertIsNone(self.source_page.parentsdata)
+
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table')
+    @patch('smarsy.get_parent_info.ParseParentData.get_bs_object',
+           return_value='some soup')
+    def test_get_parents_tab_called_with_expected_params(
+            self, mocked_bs, mocked_get_parents_tab):
+        source_page = ParseParentData('some html')
+        soup = 'some soup'
+        source_page.parse_logic()
+        mocked_get_parents_tab.assert_called_with(soup)
+
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table')
+    @patch('smarsy.get_parent_info.ParseParentData.get_bs_object',
+           return_value=False)
+    def test_get_parents_tab_not_called_if_soup_is_none(
+            self, mocked_bs, mocked_get_parents_tab):
         source_page = ParseParentData('some html')
         source_page.parse_logic()
-        self.assertEqual(source_page.parentsdata, [''])
+        mocked_get_parents_tab.assert_not_called()
+
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table',
+           return_value=False)
+    def test_parentsdata_is_none_with_none_parents_tab(self, mocked_table):
+        source_page = ParseParentData('some html')
+        source_page.parse_logic()
+        self.assertIsNone(source_page.parentsdata)

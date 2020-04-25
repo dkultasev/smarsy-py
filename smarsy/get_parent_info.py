@@ -22,10 +22,18 @@ class ParseParentData(object):
             return False
         return soup
 
+    def get_parents_table(self, soup):
+        """
+        Utility funtcion:
+            - Accepts soup and checks if parents table excists,
+              return parents table or False
+        """
+        parents_tab = soup.select('table')
+
     def parse_logic(self):
         """
         Main class logic funtcion:
-            - Cheks soup is if True - pass, Else parentsdata = empty list
+            - Cheks soup is if True - pass, Else parentsdata = None
             - Cheks for parent table if True - pass,
               Else parentsdata = empty list
             - Cheks for data in parent table if True - pass,
@@ -35,6 +43,6 @@ class ParseParentData(object):
             'parent_birth_date'
             - Creates parents data
         """
-        if not self.get_bs_object():
-            self.parentsdata = ['']
-        pass
+        soup = self.get_bs_object()
+        if soup:
+            parents_tab = self.get_parents_table(soup)
