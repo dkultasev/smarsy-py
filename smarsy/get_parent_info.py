@@ -28,7 +28,10 @@ class ParseParentData(object):
             - Accepts soup and checks if parents table excists,
               return parents table or False
         """
-        parents_tab = soup.select('table')
+        parents_tab = soup.select_one('table')
+        if parents_tab is not None and len(parents_tab) > 0:
+            return parents_tab
+        return False
 
     def parse_logic(self):
         """
