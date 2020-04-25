@@ -47,7 +47,7 @@ class TestGetParentsTab(unittest.TestCase):
         self.source_page = ParseParentData('some html')
 
     @patch('smarsy.get_parent_info.BeautifulSoup.select_one')
-    def test_bs_select_called_with_expected_params(self, mocked_bs_select):
+    def test_bs_select_one_called_with_expected_params(self, mocked_bs_select):
         self.source_page.parse_logic()
         mocked_bs_select.assert_called_with('table')
 
@@ -59,10 +59,27 @@ class TestGetParentsTab(unittest.TestCase):
                          'some table')
 
     @patch('smarsy.get_parent_info.BeautifulSoup')
-    def test_return_false_html_if_parents_tab_is_empty(self, mocked_bs):
+    def test_return_false_html_if_parents_tab_is_none(self, mocked_bs):
         mocked_bs.select_one.return_value = None
         self.source_page.parse_logic()
         self.assertFalse(self.source_page.get_parents_table(mocked_bs))
+
+
+class TestGetParentsTabChildren(unittest.TestCase):
+    def setUp(self):
+        self.source_page = ParseParentData('some html')
+
+    @patch('smarsy.get_parent_info.BeautifulSoup.children')
+    def test_bs_select_called_with_expected_params(self, mocked_bs_children):
+        pass
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    def test_return_expected_html_if_children(self, mocked_bs):
+        pass
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    def test_return_false_html_if_children_is_none(self, mocked_bs):
+        pass
 
 
 class TestParseLogic(unittest.TestCase):
