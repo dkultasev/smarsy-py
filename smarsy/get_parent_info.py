@@ -77,6 +77,15 @@ class ParseParentData(object):
         """
         parents_fullname_html = self.bs_safe_select(parent_data_html,
                                                     '.username')
+        if parents_fullname_html:
+            parents_fullname = parents_fullname_html.get_text()
+            if parents_fullname:
+                parents_fullname_list = parents_fullname.split(' ')
+                return (parents_fullname_list[0], parents_fullname_list[1],
+                        parents_fullname_list[2],
+                        parents_fullname_list[3][1:-1])
+            else:
+                return 'No parents fullname'
 
     def bs_safe_select(self, html, *args):
         """

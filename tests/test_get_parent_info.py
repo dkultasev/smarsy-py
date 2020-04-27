@@ -117,20 +117,23 @@ class GetParentsData(unittest.TestCase):
     def setUp(self):
         self.source_page = ParseParentData('some html')
 
+    @patch('smarsy.get_parent_info.BeautifulSoup')
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_img')
-    def test_get_parents_img_called_with_expected_params(self, mocked_get_img):
-        parent_data_list = ['parent_data_list']
+    def test_get_parents_img_called_with_expected_params(
+            self, mocked_get_img, mocked_soup):
+        parent_data_list = [mocked_soup]
         self.source_page.get_parents_data(parent_data_list)
-        mocked_get_img.assert_called_with('parent_data_list')
+        mocked_get_img.assert_called_with(mocked_soup)
 
+    @patch('smarsy.get_parent_info.BeautifulSoup')
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_img')
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_fullname')
     def test_get_parents_fullname_called_with_expected_params(
-            self, mocked_get_fullname, mocked_parents_img):
-        parent_data_list = ['parent_data_list']
+            self, mocked_get_fullname, mocked_parents_img, mocked_soup):
+        parent_data_list = [mocked_soup]
         mocked_parents_img.return_value = 'some_img.jpg'
         self.source_page.get_parents_data(parent_data_list)
-        mocked_get_fullname.assert_called_with('parent_data_list')
+        mocked_get_fullname.assert_called_with(mocked_soup)
 
 
 class GetParentsImg(unittest.TestCase):
@@ -188,6 +191,41 @@ class GetParentsFullname(unittest.TestCase):
         tag = '.username'
         self.source_page.get_parents_fullname('parent_data_html')
         mocked_safe_select.assert_called_with('parent_data_html', tag)
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_bs_get_text_called(self, mocked_safe_select, mocked_soup):
+        mocked_safe_select.return_value = mocked_soup
+        self.source_page.get_parents_fullname('parent_data_html')
+        mocked_soup.get_text.assert_called()
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_bs_get_text_not_called_if_bs_safe_select_return_false(
+            self, mocked_safe_select, mocked_soup):
+        mocked_safe_select.return_value = False
+        self.source_page.get_parents_fullname('parent_data_html')
+        mocked_soup.get_text.assert_not_called()
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_get_parents_fullname_return_expected_text_when_no_text(
+            self, mocked_safe_select, mocked_soup):
+        mocked_safe_select.return_value = mocked_soup
+        expected_text = 'No parents fullname'
+        mocked_soup.get_text.return_value = False
+        self.assertEqual(self.source_page.get_parents_fullname(
+                'parent_data_html'), expected_text)
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_get_parents_fullname_return_expected_fullname(
+            self, mocked_safe_select, mocked_soup):
+        mocked_safe_select.return_value = mocked_soup
+        expected = ('имя', 'фамилия', 'отчество', 'тип')
+        mocked_soup.get_text.return_value = 'имя фамилия отчество (тип)'
+        self.assertTupleEqual(self.source_page.get_parents_fullname(
+            'parent_data_html'), expected)
 
 
 class TestBsSafeSelect(unittest.TestCase):
