@@ -89,7 +89,12 @@ class ParseParentData(object):
                 return 'No parents fullname'
 
     def get_parents_bdate(self, parent_data_html):
-        pass
+        """
+        - Accepts parents data html and
+            returns parent_birth_date
+        """
+        parents_bdate_html = self.bs_safe_select(parent_data_html,
+                                                 '.userdata')
 
     def bs_safe_select(self, html, *args):
         """
