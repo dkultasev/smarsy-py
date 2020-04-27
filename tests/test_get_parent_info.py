@@ -93,24 +93,23 @@ class TestGetParentsTab(unittest.TestCase):
 
 
 class TestGetParentsTabChildren(unittest.TestCase):
-    def setUp(self):
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    def setUp(self, mocked_bs):
         self.source_page = ParseParentData('some html')
+        self.mocked_bs = mocked_bs
 
-    @patch('smarsy.get_parent_info.BeautifulSoup')
-    def test_bs_childgenerator_called_with_expected_params(self, mocked_bs):
-        self.source_page.get_parents_table_chidren(mocked_bs)
-        mocked_bs.childGenerator.assert_called()
+    def test_bs_childgenerator_called_with_expected_params(self):
+        self.source_page.get_parents_table_chidren(self.mocked_bs)
+        self.mocked_bs.childGenerator.assert_called()
 
-    @patch('smarsy.get_parent_info.BeautifulSoup')
-    def test_return_expected_html_if_children(self, mocked_bs):
-        mocked_bs.childGenerator.return_value = 'some table'
-        actual = self.source_page.get_parents_table_chidren(mocked_bs)
+    def test_return_expected_html_if_children(self):
+        self.mocked_bs.childGenerator.return_value = 'some table'
+        actual = self.source_page.get_parents_table_chidren(self.mocked_bs)
         self.assertEqual(actual, 'some table')
 
-    @patch('smarsy.get_parent_info.BeautifulSoup')
-    def test_return_false_html_if_children_is_none(self, mocked_bs):
-        mocked_bs.childGenerator.return_value = None
-        actual = self.source_page.get_parents_table_chidren(mocked_bs)
+    def test_return_false_html_if_children_is_none(self):
+        self.mocked_bs.childGenerator.return_value = None
+        actual = self.source_page.get_parents_table_chidren(self.mocked_bs)
         self.assertIsNone(actual)
 
 
