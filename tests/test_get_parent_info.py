@@ -53,16 +53,43 @@ class TestGetParentsTab(unittest.TestCase):
         mocked_bs_select_one.assert_called_with('table')
 
     @patch('smarsy.get_parent_info.BeautifulSoup')
-    def test_return_expected_html_if_parents_table(self, mocked_bs):
-        mocked_bs.select_one.return_value = 'some table'
-        actual = self.source_page.get_parents_table(mocked_bs)
-        self.assertEqual(actual, 'some table')
-
-    @patch('smarsy.get_parent_info.BeautifulSoup')
     def test_return_false_html_if_parents_table_is_none(self, mocked_bs):
         mocked_bs.select_one.return_value = None
         actual = self.source_page.get_parents_table(mocked_bs)
         self.assertFalse(actual)
+
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table_chidren')
+    @patch('smarsy.get_parent_info.BeautifulSoup.select_one',
+           return_value="some parents_table")
+    def test_children_called_with_expected_params(self, mocked_table,
+                                                  mocked_get_chidren):
+        """
+            Test if get_parents_tab_children called with expected params
+        """
+        self.source_page.parse_logic()
+        mocked_get_chidren.assert_called_with('some parents_table')
+
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table_chidren')
+    @patch('smarsy.get_parent_info.BeautifulSoup.select_one',
+           return_value='')
+    def test_children_not_called_if_parents_table_is_empty(
+            self, mocked_table, mocked_get_chidren):
+        """
+        Test if get_parents_tab_children not called if parents tab is empty
+        """
+        self.source_page.parse_logic()
+        mocked_get_chidren.assert_not_called()
+
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table_chidren')
+    @patch('smarsy.get_parent_info.BeautifulSoup.select_one',
+           return_value="some parents_table")
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    def test_return_expected_html_if_parents_table(
+            self, mocked_bs, mocked_parents_table,
+            mocked_parents_table_chidren):
+        mocked_parents_table_chidren.return_value = 'some table'
+        actual = self.source_page.get_parents_table(mocked_bs)
+        self.assertEqual(actual, 'some table')
 
 
 class TestGetParentsTabChildren(unittest.TestCase):
@@ -70,7 +97,7 @@ class TestGetParentsTabChildren(unittest.TestCase):
         self.source_page = ParseParentData('some html')
 
     @patch('smarsy.get_parent_info.BeautifulSoup')
-    def test_bs_select_called_with_expected_params(self, mocked_bs):
+    def test_bs_childgenerator_called_with_expected_params(self, mocked_bs):
         self.source_page.get_parents_table_chidren(mocked_bs)
         mocked_bs.childGenerator.assert_called()
 
@@ -84,7 +111,7 @@ class TestGetParentsTabChildren(unittest.TestCase):
     def test_return_false_html_if_children_is_none(self, mocked_bs):
         mocked_bs.childGenerator.return_value = None
         actual = self.source_page.get_parents_table_chidren(mocked_bs)
-        self.assertFalse(actual)
+        self.assertIsNone(actual)
 
 
 class TestParseLogic(unittest.TestCase):
@@ -99,9 +126,10 @@ class TestParseLogic(unittest.TestCase):
 
     @patch('smarsy.get_parent_info.ParseParentData.get_bs_object',
            new_callable=PropertyMock, return_value=False)
-    def test_parentsdata_is_none_with_wrong_soup(self, mocked_bs):
+    def test_parentsdata_is_expected_none_with_wrong_soup(self, mocked_bs):
         self.source_page.parse_logic()
-        self.assertIsNone(self.source_page.parentsdata)
+        expected = 'Нет данных о родителях'
+        self.assertEqual(self.source_page.parentsdata, expected)
 
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_table')
     @patch('smarsy.get_parent_info.ParseParentData.get_bs_object',
@@ -122,62 +150,25 @@ class TestParseLogic(unittest.TestCase):
 
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_table',
            return_value=False)
-    def test_parentsdata_is_none_with_none_parents_table(self, mocked_table):
+    def test_parentsdata_is_expected_with_none_parents_table(
+            self, mocked_table):
+        expected = 'Родительская таблица пуста'
         self.source_page.parse_logic()
-        self.assertIsNone(self.source_page.parentsdata)
+        self.assertTrue(self.source_page.parentsdata, expected)
 
-    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table_chidren')
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_data')
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_table',
-           return_value="some parents_table")
-    def test_children_called_with_expected_params(self, mocked_table,
-                                                  mocked_get_chidren):
-        """
-            Test if get_parents_tab_children called with expected params
-        """
+           return_value=None)
+    def test_parse_parent_data_not_called_if_parents_table_is_none(
+            self, mocked_table, mocked_get_parents_data):
         self.source_page.parse_logic()
-        mocked_get_chidren.assert_called_with('some parents_table')
+        mocked_get_parents_data.assert_not_called()
 
-    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table_chidren')
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_data')
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_table',
-           return_value=False)
-    def test_children_not_called_if_parents_table_is_none(
-            self, mocked_table, mocked_get_chidren):
-        """
-        Test if get_parents_tab_children not called if parents tab is none
-        """
+           return_value="some parents_table children html")
+    def test_parse_parent_data_called_with_expected_params(
+            self, mocked_table, mocked_get_parents_data):
         self.source_page.parse_logic()
-        mocked_get_chidren.assert_not_called()
-
-    @patch('smarsy.get_parent_info.ParseParentData.get_parents_table_chidren',
-           return_value=False)
-    def test_parentsdata_is_none_if_parents_table_has_no_children(
-            self, mocked_get_chidren):
-        """
-        Test parentsdata is still None if parents tab has no children tags
-        """
-        self.source_page.parse_logic()
-        self.assertIsNone(self.source_page.parentsdata)
-
-    # @patch('smarsy.get_parent_info.ParseParentData.get_parents_data')
-    # @patch('smarsy.get_parent_info.ParseParentData.get_parents_table_chidren',
-    #        return_value=["some parents_table children html"])
-    # def test_parse_parent_data_called_with_expected_params(
-    #         self, mocked_parents_table_chidren_list, mocked_get_parents_data):
-    #     self.source_page.parse_logic()
-    #     mocked_get_parents_data.assert_called_with(
-    #         'some parents_table children html')
-
-    # @patch('smarsy.get_parent_info.ParseParentData.get_parents_data')
-    # @patch('smarsy.get_parent_info.ParseParentData.get_parents_table_chidren',
-    #        return_value=False)
-    # def test_parse_parent_data_not_called_if_children_table_is_none(
-    #         self, mocked_parents_table_chidren_list, mocked_get_parents_data):
-    #     self.source_page.parse_logic()
-    #     self.mocked_get_parents_data.assert_not_called()
-
-    # @patch('smarsy.get_parent_info.ParseParentData.get_parents_data',
-    #        return_value=False)
-    # def test_parentsdata_is_none_if_parse_data_is_none(
-    #         self, mocked_get_parents_data):
-    #     self.source_page.parse_logic()
-    #     self.assertIsNone(self.source_page.parentsdata)
+        mocked_get_parents_data.assert_called_with(
+            'some parents_table children html')

@@ -26,38 +26,40 @@ class ParseParentData(object):
     def get_parents_table(self, soup):
         """
         Utility funtcion:
-            - Accepts soup and checks if parents table excists,
-              return parents table or False
+            - Accepts soup and checks if parents table excists.
+              If excists return parents table chidren list or False
         """
         parents_tab = soup.select_one('table')
         if parents_tab is not None and len(parents_tab) > 0:
-            return parents_tab
+            parents_table_chidren_list = self.get_parents_table_chidren(
+                    parents_tab)
+            if parents_table_chidren_list is not None:
+                return parents_table_chidren_list
         return False
 
     def get_parents_table_chidren(self, parents_table_html):
         """
         Utility funtcion:
-            - Accepts parents table html and checks if it has children,
-              return children list_iterator object or False
+            - Accepts parents table html and return children list_iterator
         """
         parents_tab_chidren = parents_table_html.childGenerator()
-        if parents_tab_chidren is not None:
-            return parents_tab_chidren
-        return False
+        return parents_tab_chidren
 
-    def get_parents_data(self, parent_data_html):
+    def get_parents_data(self, parent_data_list):
         """
         Utility funtcion:
-            - Accepts parents data html and return parent data or False
+            - Accepts parents data table list_iterator and
+            return parent data or False
         """
         pass
 
     def parse_logic(self):
         """
         Main class logic funtcion:
-            - Cheks soup is if True - pass, Else parentsdata = None
+            - Cheks soup is if True - pass, Else
+            parentsdata = 'Нет данных о родителях'
             - Cheks for parent table if True - pass,
-              Else parentsdata = empty list
+              Else parentsdata = 'Родительская таблица пуста'
             - Cheks for data in parent table children if True - pass,
               Else parentsdata = empty list
             - For each parent parse 'parent_img', 'parent_name',
@@ -69,30 +71,8 @@ class ParseParentData(object):
         if soup:
             parents_tab = self.get_parents_table(soup)
             if parents_tab:
-                parents_table_chidren_list = self.get_parents_table_chidren(
-                    parents_tab)
-                if parents_table_chidren_list:
-                    pass
-            #         for parent in parents_table_chidren_list:
-                    # parent_data = self.get_parents_data('parent')
-                    # if parent_data:
-                    #     pass
-                else:
-                    self.parentsdata = 'dsffsffd'
-        
-
-
-html = '<TD><TABLE><TR><TD valign=top>\
-        <img src="https://smarsy.ua/images/mypage/parent_1.png">\
-        </TD><TD><TABLE><TR>\
-        <TD class="username">Инокентий Петрушкин Акардеонович (Папа)\
-        </TD></TR><TR><TD class="userdata">30 апреля 1983 г.</TD></TR>\
-        </TABLE></TD></TR><TR><TD valign=top>\
-        <img src="https://smarsy.ua/images/mypage/parent_2.png">\
-        </TD><TD><TABLE><TR>\
-        <TD class="username">Пелагея Пупкина Васильевна (Мама)\
-        </TD></TR><TR><TD class="userdata">1 апреля 1900 г.</TD></TR>\
-        </TABLE></TD></TR></TABLE><TABLE></TABLE><TABLE></TABLE></TD>'
-# p = ParseParentData(2442423)
-# p.parse_logic()
-# print(p.parentsdata)
+                parent_data = self.get_parents_data(parents_tab)
+            else:
+                self.parentsdata = 'Родительская таблица пуста'
+        else:
+            self.parentsdata = 'Нет данных о родителях'
