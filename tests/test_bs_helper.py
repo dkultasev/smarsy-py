@@ -36,3 +36,29 @@ class TestGetPageSource(unittest.TestCase):
              self, mocked_soup):
         source_page = BSHelper(12345)
         self.assertFalse(source_page.get_bs_object)
+
+
+class TestBsSafeSelect(unittest.TestCase):
+    @patch('smarsy.bs_helper.BeautifulSoup')
+    def setUp(self, mocked_soup):
+        self.source_page = BSHelper('some html')
+        self.mocked_soup = mocked_soup
+        self.mocked_soup.select_one.return_value = 'some text'
+        self.selector = 'some_tag'
+
+    def test_bs_safe_select_return_expected_text_with_single_selector(self):
+        actual = self.source_page.bs_safe_select(self.mocked_soup,
+                                                 self.selector)
+        self.assertEqual(actual, 'some text')
+
+    def test_bs_safe_select_return_expected_text_with_many_selectors(self):
+        selector1, selector2, selector3 = 'some_tag1', 'some_tag2', 'some_tag3'
+        actual = self.source_page.bs_safe_select(self.mocked_soup, selector1,
+                                                 selector2, selector3)
+        self.assertEqual(actual, 'some text')
+
+    def test_bs_safe_select_return_false_when_selectedElems_is_empty(
+             self):
+        self.mocked_soup.select_one.return_value = ''
+        self.assertFalse(self.source_page.bs_safe_select(self.mocked_soup,
+                                                         self.selector))
