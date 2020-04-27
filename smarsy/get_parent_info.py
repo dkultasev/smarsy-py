@@ -54,6 +54,7 @@ class ParseParentData(object):
         for parent in parent_data_list:
             parent_img = self.get_parents_img(parent)
             parent_fullname = self.get_parents_fullname(parent)
+            parent_fullname = self.get_parents_bdate(parent)
 
     def get_parents_img(self, parent_data_html):
         """
@@ -86,6 +87,9 @@ class ParseParentData(object):
                         parents_fullname_list[3][1:-1])
             else:
                 return 'No parents fullname'
+
+    def get_parents_bdate(self, parent_data_html):
+        pass
 
     def bs_safe_select(self, html, *args):
         """
