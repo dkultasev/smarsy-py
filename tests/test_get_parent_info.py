@@ -129,10 +129,27 @@ class GetParentsImg(unittest.TestCase):
         self.source_page = ParseParentData('some html')
 
     @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
-    def test_safe_select_with_expected_tag(self, mocked_safeselect):
+    def test_safe_select_called_with_expected_tag(self, mocked_safe_select):
         tag1, tag2 = '[valign=top]', 'img[src]'
         self.source_page.get_parents_img('parent_data_html')
-        mocked_safeselect.assert_called_with('parent_data_html', tag1, tag2)
+        mocked_safe_select.assert_called_with('parent_data_html', tag1, tag2)
+
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_get')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_safe_get_called_with_expected_attribute(
+            self, mocked_safe_select, mocked_safe_get):
+        mocked_safe_select.return_value = 'some_img_html'
+        attribute = 'src'
+        self.source_page.get_parents_img('parent_data_html')
+        mocked_safe_get.assert_called_with('some_img_html', attribute)
+
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_get')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_safe_get_not_called_if_bs_safe_select_return_false(
+            self, mocked_safe_select, mocked_safe_get):
+        mocked_safe_select.return_value = False
+        self.source_page.get_parents_img('parent_data_html')
+        mocked_safe_get.assert_not_called()
 
 
 class TestBsSafeSelect(unittest.TestCase):
