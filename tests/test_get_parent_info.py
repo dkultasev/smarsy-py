@@ -151,6 +151,24 @@ class GetParentsImg(unittest.TestCase):
         self.source_page.get_parents_img('parent_data_html')
         mocked_safe_get.assert_not_called()
 
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_get')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_get_parents_img_return_no_image_when_no_img_source(
+            self, mocked_safe_select, mocked_safe_get):
+        mocked_safe_select.return_value = 'some html'
+        mocked_safe_get.return_value = False
+        self.assertEqual(self.source_page.get_parents_img('parent_data_html'),
+                         'No image')
+
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_get')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_get_parents_img_return_expected_image_url(
+            self, mocked_safe_select, mocked_safe_get):
+        mocked_safe_select.return_value = 'some html'
+        mocked_safe_get.return_value = 'some_img.jpg'
+        self.assertEqual(self.source_page.get_parents_img('parent_data_html'),
+                         'some_img.jpg')
+
 
 class TestBsSafeSelect(unittest.TestCase):
     @patch('smarsy.get_parent_info.BeautifulSoup')

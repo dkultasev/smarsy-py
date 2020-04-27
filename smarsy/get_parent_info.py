@@ -63,6 +63,10 @@ class ParseParentData(object):
                                        '[valign=top]', 'img[src]')
         if img_html:
             img_url = self.bs_safe_get(img_html, 'src')
+            if img_url:
+                return img_url
+            else:
+                return 'No image'
 
     def bs_safe_select(self, html, *args):
         """
