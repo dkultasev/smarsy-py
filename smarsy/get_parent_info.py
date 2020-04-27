@@ -59,7 +59,20 @@ class ParseParentData(object):
         - Accepts parents data html and
             return link to parents image
         """
-        pass
+        img = self.bs_safe_select(parent_data_html, '[valign=top]', 'img[src]')
+
+    def bs_safe_select(self, parent_data_html, *args):
+        """
+        Utility function used to get a content string from a
+        HTML and tuple of selectors. Returns False
+        if no object is found for the given selector
+        """
+        # print(parent_data_html.select_one('[valign=top]').select_one('img[src]'))
+        for arg in args:
+            selectedElems = parent_data_html.select_one(arg)
+        if selectedElems is not None:
+            return selectedElems
+        return False
 
     def parse_logic(self):
         """

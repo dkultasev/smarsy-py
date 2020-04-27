@@ -2,7 +2,7 @@ import unittest
 import sys
 import os
 
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, MagicMock
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              '..')))
@@ -122,6 +122,42 @@ class GetParentsData(unittest.TestCase):
         parent_data_list = ['parent_data_list']
         self.source_page.get_parents_data(parent_data_list)
         mocked_get_img.assert_called_with('parent_data_list')
+
+
+class GetParentsImg(unittest.TestCase):
+    def setUp(self):
+        self.source_page = ParseParentData('some html')
+
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_safe_select_with_expected_tag(self, mocked_safeselect):
+        tag1, tag2 = '[valign=top]', 'img[src]'
+        self.source_page.get_parents_img('parent_data_html')
+        mocked_safeselect.assert_called_with('parent_data_html', tag1, tag2)
+
+
+class TestBsSafeSelect(unittest.TestCase):
+    def setUp(self):
+        self.source_page = ParseParentData('some html')
+        self.mocked_soup = MagicMock()
+        self.mocked_soup.select_one.return_value = 'some text'
+        self.selector = 'some_tag'
+
+    def test_bs_safe_select_return_expected_text_with_single_selector(self):
+        actual = self.source_page.bs_safe_select(self.mocked_soup,
+                                                 self.selector)
+        self.assertEqual(actual, 'some text')
+
+    def test_bs_safe_select_return_expected_text_with_many_selectors(self):
+        selector1, selector2, selector3 = 'some_tag1', 'some_tag2', 'some_tag3'
+        actual = self.source_page.bs_safe_select(self.mocked_soup, selector1,
+                                                 selector2, selector3)
+        self.assertEqual(actual, 'some text')
+
+    def test_bs_safe_select_return_false_when_selectedElems_is_empty(
+            self):
+        self.mocked_soup.select_one.return_value = ''
+        self.assertFalse(self.source_page.bs_safe_select(self.mocked_soup,
+                                                         self.selector))
 
 
 class TestParseLogic(unittest.TestCase):
