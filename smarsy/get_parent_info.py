@@ -82,8 +82,10 @@ class ParseParentData(object):
         HTML and attribute. Returns False
         if no object is found for the given selector
         """
-        print(html, attribute)
-        pass
+        element = html.get(attribute)
+        if element is not None:
+            return element
+        return False
 
     def parse_logic(self):
         """
