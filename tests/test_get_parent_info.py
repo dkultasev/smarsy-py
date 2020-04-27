@@ -117,19 +117,22 @@ class GetParentsData(unittest.TestCase):
     def setUp(self):
         self.source_page = ParseParentData('some html')
 
+    @patch('smarsy.get_parent_info.convert_to_date_from_russian_written')
     @patch('smarsy.get_parent_info.BeautifulSoup')
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_img')
     def test_get_parents_img_called_with_expected_params(
-            self, mocked_get_img, mocked_soup):
+            self, mocked_get_img, mocked_soup, mocked_date):
         parent_data_list = [mocked_soup]
         self.source_page.get_parents_data(parent_data_list)
         mocked_get_img.assert_called_with(mocked_soup)
 
+    @patch('smarsy.get_parent_info.convert_to_date_from_russian_written')
     @patch('smarsy.get_parent_info.BeautifulSoup')
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_img')
     @patch('smarsy.get_parent_info.ParseParentData.get_parents_fullname')
     def test_get_parents_fullname_called_with_expected_params(
-            self, mocked_get_fullname, mocked_parents_img, mocked_soup):
+            self, mocked_get_fullname, mocked_parents_img, mocked_soup,
+            mocked_date):
         parent_data_list = [mocked_soup]
         mocked_parents_img.return_value = 'some_img.jpg'
         self.source_page.get_parents_data(parent_data_list)
@@ -245,15 +248,19 @@ class GetParentsBDate(unittest.TestCase):
     def setUp(self):
         self.source_page = ParseParentData('some html')
 
+    @patch('smarsy.get_parent_info.convert_to_date_from_russian_written')
     @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
-    def test_safe_select_called_with_expected_tag(self, mocked_safe_select):
+    def test_safe_select_called_with_expected_tag(
+            self, mocked_safe_select, mocked_date):
         tag = '.userdata'
         self.source_page.get_parents_bdate('parent_data_html')
         mocked_safe_select.assert_called_with('parent_data_html', tag)
 
+    @patch('smarsy.get_parent_info.convert_to_date_from_russian_written')
     @patch('smarsy.get_parent_info.BeautifulSoup')
     @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
-    def test_bs_get_text_called(self, mocked_safe_select, mocked_soup):
+    def test_bs_get_text_called(self, mocked_safe_select,
+                                mocked_soup, mocked_date):
         mocked_safe_select.return_value = mocked_soup
         self.source_page.get_parents_bdate('parent_data_html')
         mocked_soup.get_text.assert_called()
@@ -265,6 +272,36 @@ class GetParentsBDate(unittest.TestCase):
         mocked_safe_select.return_value = False
         self.source_page.get_parents_bdate('parent_data_html')
         mocked_soup.get_text.assert_not_called()
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_get_parents_bdate_return_expected_text_when_no_text(
+            self, mocked_safe_select, mocked_soup):
+        mocked_safe_select.return_value = mocked_soup
+        expected_text = 'No parents birthday'
+        mocked_soup.get_text.return_value = False
+        self.assertEqual(self.source_page.get_parents_bdate(
+                'parent_data_html'), expected_text)
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    @patch('smarsy.get_parent_info.convert_to_date_from_russian_written')
+    def test_convert_to_date_called_with_expected_bdate(
+            self, mocked_date, mocked_safe_select, mocked_soup):
+        mocked_safe_select.return_value = mocked_soup
+        mocked_soup.get_text.return_value = '1 апреля 1900 г.'
+        self.source_page.get_parents_bdate('parent_data_html')
+        mocked_date.assert_called_with('1 апреля 1900 г.')
+
+    @patch('smarsy.get_parent_info.BeautifulSoup')
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    @patch('smarsy.get_parent_info.convert_to_date_from_russian_written')
+    def test_convert_to_date_not_called(
+            self, mocked_date, mocked_safe_select, mocked_soup):
+        mocked_safe_select.return_value = mocked_soup
+        mocked_soup.get_text.return_value = False
+        self.source_page.get_parents_bdate('parent_data_html')
+        mocked_date.assert_not_called()
 
 
 class TestBsSafeSelect(unittest.TestCase):

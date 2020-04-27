@@ -1,4 +1,11 @@
 from bs4 import BeautifulSoup
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             '..')))
+
+from smarsy.parse import convert_to_date_from_russian_written # noqa
 
 
 class ParseParentData(object):
@@ -97,6 +104,11 @@ class ParseParentData(object):
                                                  '.userdata')
         if parents_bdate_html:
             parents_bdate = parents_bdate_html.get_text()
+            if parents_bdate:
+                parents_bdate_in_right_format = str(
+                    convert_to_date_from_russian_written(parents_bdate))
+            else:
+                return 'No parents birthday'
 
     def bs_safe_select(self, html, *args):
         """
