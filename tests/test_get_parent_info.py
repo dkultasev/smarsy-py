@@ -123,6 +123,15 @@ class GetParentsData(unittest.TestCase):
         self.source_page.get_parents_data(parent_data_list)
         mocked_get_img.assert_called_with('parent_data_list')
 
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_img')
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_fullname')
+    def test_get_parents_fullname_called_with_expected_params(
+            self, mocked_get_fullname, mocked_parents_img):
+        parent_data_list = ['parent_data_list']
+        mocked_parents_img.return_value = 'some_img.jpg'
+        self.source_page.get_parents_data(parent_data_list)
+        mocked_get_fullname.assert_called_with('parent_data_list')
+
 
 class GetParentsImg(unittest.TestCase):
     def setUp(self):

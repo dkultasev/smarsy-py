@@ -53,6 +53,7 @@ class ParseParentData(object):
         """
         for parent in parent_data_list:
             parent_img = self.get_parents_img(parent)
+            parent_fullname = self.get_parents_fullname(parent)
 
     def get_parents_img(self, parent_data_html):
         """
@@ -67,6 +68,9 @@ class ParseParentData(object):
                 return img_url
             else:
                 return 'No image'
+
+    def get_parents_fullname(self, parent_data_html):
+        pass
 
     def bs_safe_select(self, html, *args):
         """
