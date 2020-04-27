@@ -179,6 +179,11 @@ class GetParentsImg(unittest.TestCase):
                          'some_img.jpg')
 
 
+class GetParentsFullame(unittest.TestCase):
+    def setUp(self):
+        self.source_page = ParseParentData('some html')
+
+
 class TestBsSafeSelect(unittest.TestCase):
     @patch('smarsy.get_parent_info.BeautifulSoup')
     def setUp(self, mocked_soup):
