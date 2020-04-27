@@ -113,6 +113,17 @@ class TestGetParentsTabChildren(unittest.TestCase):
         self.assertIsNone(actual)
 
 
+class GetParentsData(unittest.TestCase):
+    def setUp(self):
+        self.source_page = ParseParentData('some html')
+
+    @patch('smarsy.get_parent_info.ParseParentData.get_parents_img')
+    def test_get_parents_img_called_with_expected_params(self, mocked_get_img):
+        parent_data_list = ['parent_data_list']
+        self.source_page.get_parents_data(parent_data_list)
+        mocked_get_img.assert_called_with('parent_data_list')
+
+
 class TestParseLogic(unittest.TestCase):
     def setUp(self):
         self.source_page = ParseParentData('some html')

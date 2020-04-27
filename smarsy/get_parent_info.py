@@ -49,7 +49,15 @@ class ParseParentData(object):
         """
         Utility funtcion:
             - Accepts parents data table list_iterator and
-            return parent data or False
+            return parent data
+        """
+        for parent in parent_data_list:
+            parent_img = self.get_parents_img(parent)
+
+    def get_parents_img(self, parent_data_html):
+        """
+        - Accepts parents data html and
+            return link to parents image
         """
         pass
 
