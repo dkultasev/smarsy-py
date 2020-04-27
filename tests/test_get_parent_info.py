@@ -179,9 +179,15 @@ class GetParentsImg(unittest.TestCase):
                          'some_img.jpg')
 
 
-class GetParentsFullame(unittest.TestCase):
+class GetParentsFullname(unittest.TestCase):
     def setUp(self):
         self.source_page = ParseParentData('some html')
+
+    @patch('smarsy.get_parent_info.ParseParentData.bs_safe_select')
+    def test_safe_select_called_with_expected_tag(self, mocked_safe_select):
+        tag = '.username'
+        self.source_page.get_parents_fullname('parent_data_html')
+        mocked_safe_select.assert_called_with('parent_data_html', tag)
 
 
 class TestBsSafeSelect(unittest.TestCase):

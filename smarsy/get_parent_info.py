@@ -70,7 +70,13 @@ class ParseParentData(object):
                 return 'No image'
 
     def get_parents_fullname(self, parent_data_html):
-        pass
+        """
+        - Accepts parents data html and
+            return parent_name, parent_surname,
+            parent_middlename, parent_type
+        """
+        parents_fullname_html = self.bs_safe_select(parent_data_html,
+                                                    '.username')
 
     def bs_safe_select(self, html, *args):
         """
