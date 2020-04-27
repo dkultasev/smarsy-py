@@ -95,6 +95,8 @@ class ParseParentData(object):
         """
         parents_bdate_html = self.bs_safe_select(parent_data_html,
                                                  '.userdata')
+        if parents_bdate_html:
+            parents_bdate = parents_bdate_html.get_text()
 
     def bs_safe_select(self, html, *args):
         """
