@@ -45,13 +45,20 @@ class ParseParentData(object):
             return parents_tab_chidren
         return False
 
+    def get_parents_data(self, parent_data_html):
+        """
+        Utility funtcion:
+            - Accepts parents data html and return parent data or False
+        """
+        pass
+
     def parse_logic(self):
         """
         Main class logic funtcion:
             - Cheks soup is if True - pass, Else parentsdata = None
             - Cheks for parent table if True - pass,
               Else parentsdata = empty list
-            - Cheks for data in parent table if True - pass,
+            - Cheks for data in parent table children if True - pass,
               Else parentsdata = empty list
             - For each parent parse 'parent_img', 'parent_name',
             'parent_surname', 'parent_middlename', 'parent_type',
@@ -66,3 +73,26 @@ class ParseParentData(object):
                     parents_tab)
                 if parents_table_chidren_list:
                     pass
+            #         for parent in parents_table_chidren_list:
+                    # parent_data = self.get_parents_data('parent')
+                    # if parent_data:
+                    #     pass
+                else:
+                    self.parentsdata = 'dsffsffd'
+        
+
+
+html = '<TD><TABLE><TR><TD valign=top>\
+        <img src="https://smarsy.ua/images/mypage/parent_1.png">\
+        </TD><TD><TABLE><TR>\
+        <TD class="username">Инокентий Петрушкин Акардеонович (Папа)\
+        </TD></TR><TR><TD class="userdata">30 апреля 1983 г.</TD></TR>\
+        </TABLE></TD></TR><TR><TD valign=top>\
+        <img src="https://smarsy.ua/images/mypage/parent_2.png">\
+        </TD><TD><TABLE><TR>\
+        <TD class="username">Пелагея Пупкина Васильевна (Мама)\
+        </TD></TR><TR><TD class="userdata">1 апреля 1900 г.</TD></TR>\
+        </TABLE></TD></TR></TABLE><TABLE></TABLE><TABLE></TABLE></TD>'
+# p = ParseParentData(2442423)
+# p.parse_logic()
+# print(p.parentsdata)
