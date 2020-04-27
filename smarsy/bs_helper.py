@@ -32,3 +32,14 @@ class BSHelper(object):
         if selectedElems is not None:
             return selectedElems
         return False
+
+    def bs_safe_get(self, html, attribute):
+        """
+        Utility function used to get a content string from a
+        HTML and attribute. Returns False
+        if no object is found for the given selector
+        """
+        element = html.get(attribute)
+        if element is not None:
+            return element
+        return False
