@@ -25,17 +25,17 @@ class TestBSHelperInstance(unittest.TestCase):
 
 class TestGetPageSource(unittest.TestCase):
     @patch('smarsy.bs_helper.BeautifulSoup', new_callable=PropertyMock)
-    def test_get_bs_object_called_with_expected_html(self, mocked_soup):
+    def test_bs_object_called_with_expected_html(self, mocked_soup):
         html = '<tr></tr>'
         source_page = BSHelper(html)
-        source_page.get_bs_object
+        source_page.bs_object
         mocked_soup.assert_called_with(html, 'html.parser')
 
     @patch('smarsy.bs_helper.BeautifulSoup', side_effect=TypeError)
-    def test_get_bs_object_return_false_with_unexpected_html(
+    def test_bs_object_return_false_with_unexpected_html(
              self, mocked_soup):
         source_page = BSHelper(12345)
-        self.assertFalse(source_page.get_bs_object)
+        self.assertFalse(source_page.bs_object)
 
 
 class TestBsSafeSelect(unittest.TestCase):

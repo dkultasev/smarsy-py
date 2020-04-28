@@ -9,7 +9,7 @@ class BSHelper(object):
         self.html = html
 
     @property
-    def get_bs_object(self):
+    def bs_object(self):
         """
         Utility funtcion:
             - Accepts html and checks its validity using BeautifulSoup library,
