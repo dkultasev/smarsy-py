@@ -21,7 +21,7 @@ class TestBSHelperInstance(unittest.TestCase):
         self.assertEqual(source_page.html, html)
 
 
-class TestGetPageSource(unittest.TestCase):
+class Test_bs_object(unittest.TestCase):
     @patch('smarsy.bs_helper.BeautifulSoup', new_callable=PropertyMock)
     def test_bs_object_called_with_expected_html(self, mocked_soup):
         html = '<tr></tr>'
@@ -36,7 +36,7 @@ class TestGetPageSource(unittest.TestCase):
         self.assertFalse(source_page.bs_object)
 
 
-class TestBsSafeSelect(unittest.TestCase):
+class Test_bs_safe_select(unittest.TestCase):
     @patch('smarsy.bs_helper.BeautifulSoup')
     def setUp(self, mocked_soup):
         self.source_page = BSHelper('some html')
@@ -62,7 +62,7 @@ class TestBsSafeSelect(unittest.TestCase):
                                                          self.selector))
 
 
-class TestBsSafeget(unittest.TestCase):
+class Test_bs_safe_get(unittest.TestCase):
     @patch('smarsy.bs_helper.BeautifulSoup')
     def setUp(self, mocked_soup):
         self.source_page = BSHelper('some html')
