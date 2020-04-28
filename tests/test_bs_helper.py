@@ -44,11 +44,12 @@ class Test_bs_safe_select(unittest.TestCase):
         self.selector = 'some_tag'
         self.selectors = 'some_tag1', 'some_tag2', 'some_tag3'
         self.select_one_values = ('some text1', 'some text2', 'some text3')
+        self.expected = 'some text'
 
     def test_bs_safe_select_return_expected_text_with_single_selector(self):
         actual = self.source_page.bs_safe_select(self.mocked_soup,
                                                  self.selector)
-        self.assertEqual(actual, 'some text')
+        self.assertEqual(actual, self.expected)
 
     def test_bs_safe_select_return_expected_text_with_many_selectors(self):
         select_one = None
@@ -85,6 +86,7 @@ class Test_bs_safe_get(unittest.TestCase):
 
     def test_bs_safe_get_return_expected_text(self):
         self.mocked_soup.get.return_value = 'some text'
+        expected_text = 'some text'
         actual = self.source_page.bs_safe_get(self.mocked_soup,
                                               'some attribute')
-        self.assertEqual(actual, 'some text')
+        self.assertEqual(actual, expected_text)
