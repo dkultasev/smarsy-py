@@ -25,8 +25,7 @@ class Test_bs_object(unittest.TestCase):
     @patch('smarsy.bs_helper.BeautifulSoup', new_callable=PropertyMock)
     def test_bs_object_called_with_expected_html(self, mocked_soup):
         html = '<tr></tr>'
-        source_page = BSHelper(html)
-        source_page.bs_object
+        source_page = BSHelper(html).bs_object
         mocked_soup.assert_called_with(html, 'html.parser')
 
     @patch('smarsy.bs_helper.BeautifulSoup', side_effect=TypeError)
@@ -43,6 +42,7 @@ class Test_bs_safe_select(unittest.TestCase):
         self.mocked_soup = mocked_soup
         self.mocked_soup.select_one.return_value = 'some text'
         self.selector = 'some_tag'
+        self.expected_text = 'some_tag1', 'some_tag2', 'some_tag3'
 
     def test_bs_safe_select_return_expected_text_with_single_selector(self):
         actual = self.source_page.bs_safe_select(self.mocked_soup,
@@ -50,12 +50,11 @@ class Test_bs_safe_select(unittest.TestCase):
         self.assertEqual(actual, 'some text')
 
     def test_bs_safe_select_return_expected_text_with_many_selectors(self):
-        selector1, selector2, selector3 = 'some_tag1', 'some_tag2', 'some_tag3'
-        actual = self.source_page.bs_safe_select(self.mocked_soup, selector1,
-                                                 selector2, selector3)
+        actual = self.source_page.bs_safe_select(self.mocked_soup,
+                                                 self.expected_text)
         self.assertEqual(actual, 'some text')
 
-    def test_bs_safe_select_return_false_when_selectedElems_is_empty(
+    def test_bs_safe_select_return_false_when_no_object_is_found(
              self):
         self.mocked_soup.select_one.return_value = ''
         self.assertFalse(self.source_page.bs_safe_select(self.mocked_soup,
