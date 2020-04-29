@@ -73,20 +73,20 @@ class Test_bs_safe_get(unittest.TestCase):
         self.source_page = BSHelper('some html')
         self.mocked_soup = mocked_soup
         self.expected_text = 'some text'
+        self.expected_attribute = 'some attribute'
 
     def test_bs_get_called_with_expected_html_and_attribute(self):
-        expected_attribute = 'some attribute'
-        self.source_page.bs_safe_get(self.mocked_soup, expected_attribute)
-        self.mocked_soup.get.assert_called_with(expected_attribute)
+        self.source_page.bs_safe_get(self.mocked_soup, self.expected_attribute)
+        self.mocked_soup.get.assert_called_with(self.expected_attribute)
 
     def test_bs_safe_get_return_false_when_element_is_empty(
              self):
         self.mocked_soup.get.return_value = ''
         self.assertFalse(self.source_page.bs_safe_get(self.mocked_soup,
-                                                      'some attribute'))
+                                                      self.expected_attribute))
 
     def test_bs_safe_get_return_expected_text(self):
         self.mocked_soup.get.return_value = 'some text'
         actual = self.source_page.bs_safe_get(self.mocked_soup,
-                                              'some attribute')
+                                              self.expected_attribute)
         self.assertEqual(actual, self.expected_text)
