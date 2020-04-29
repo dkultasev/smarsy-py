@@ -74,6 +74,7 @@ class Test_bs_safe_get(unittest.TestCase):
         self.mocked_soup = mocked_soup
         self.expected_text = 'some text'
         self.expected_attribute = 'some attribute'
+        self.mocked_soup.get.return_value = 'some text'
 
     def test_bs_get_called_with_expected_html_and_attribute(self):
         self.source_page.bs_safe_get(self.mocked_soup, self.expected_attribute)
@@ -86,7 +87,6 @@ class Test_bs_safe_get(unittest.TestCase):
                                                       self.expected_attribute))
 
     def test_bs_safe_get_return_expected_text(self):
-        self.mocked_soup.get.return_value = 'some text'
         actual = self.source_page.bs_safe_get(self.mocked_soup,
                                               self.expected_attribute)
         self.assertEqual(actual, self.expected_text)
