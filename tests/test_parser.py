@@ -22,62 +22,43 @@ from smarsy.parse import (validate_title, get_user_credentials,
 
 
 class TestsFileOperations(unittest.TestCase):
-    @patch('smarsy.parse.open_json_file')
-    def test_user_credentials_object_is_the_same_like_in_file(self,
-                                                              mock_json_load):
-        expected = {
+    def setUp(self):
+        self.creds = {
             'language': 'UA',
             'username': 'user',
             'password': 'pass'
         }
-        mock_json_load.return_value = expected
+        self.mock_json_load = patch('parse.open_json_file')
+
+    def delete_cred_element_and_run_get_user_credentials(self, element):
+        del self.creds[element]
+        self.mock_json_load.return_value = self.creds
+        with self.assertRaises(Exception) as ue:
+            get_user_credentials()
+        return str(ue)
+
+    def test_user_credentials_object_is_same_like_in_file(self):
+        self.mock_json_load.return_value = self.creds
         actual = get_user_credentials()
-        self.assertEqual(actual, expected)
+        self.assertEqual(actual, self.creds)
 
-    @patch('smarsy.parse.open_json_file')
-    def test_user_credentials_fails_if_there_is_no_user(self,
-                                                        mock_json_load):
-        creds = {
-            'language': 'UA',
-            'notuser': 'user',
-            'password': 'pass'
-        }
-        mock_json_load.return_value = creds
-        with self.assertRaises(Exception) as ue:
-            get_user_credentials()
+    def test_user_credentials_fails_if_there_is_no_user(self):
+        element = 'username'
         self.assertEqual(
-            'Credentials are in the wrong format (username is missing)',
-            str(ue.exception))
+            f'Credentials are in the wrong format ({element} is missing)',
+            self.test_user_credentials_object_is_same_like_in_file(element))
 
-    @patch('smarsy.parse.open_json_file')
-    def test_user_credentials_fails_if_there_is_no_language(self,
-                                                            mock_json_load):
-        creds = {
-            'nolanguage': 'UA',
-            'username': 'user',
-            'password': 'pass'
-        }
-        mock_json_load.return_value = creds
-        with self.assertRaises(Exception) as ue:
-            get_user_credentials()
+    def test_user_credentials_fails_if_there_is_no_language(self):
+        element = 'language'
         self.assertEqual(
-            'Credentials are in the wrong format (language is missing)',
-            str(ue.exception))
+            f'Credentials are in the wrong format ({element} is missing)',
+            self.test_user_credentials_object_is_same_like_in_file(element))
 
-    @patch('smarsy.parse.open_json_file')
-    def test_user_credentials_fails_if_there_is_no_password(self,
-                                                            mock_json_load):
-        creds = {
-            'language': 'UA',
-            'username': 'user',
-            'nopassword': 'pass'
-        }
-        mock_json_load.return_value = creds
-        with self.assertRaises(Exception) as ue:
-            get_user_credentials()
+    def test_user_credentials_fails_if_there_is_no_password(self):
+        element = 'password'
         self.assertEqual(
-            'Credentials are in the wrong format (password is missing)',
-            str(ue.exception))
+            f'Credentials are in the wrong format ({element} is missing)',
+            self.test_user_credentials_object_is_same_like_in_file(element))
 
     @patch('builtins.open')
     @patch('json.load')
@@ -114,12 +95,7 @@ class TestsFileOperations(unittest.TestCase):
 
     def test_validate_object_keys_all_keys_exists(self):
         keys_list = ('language', 'username', 'password')
-        creds = {
-            'language': 'UA',
-            'username': 'user',
-            'password': 'pass'
-        }
-        self.assertTrue(validate_object_keys(keys_list, creds))
+        self.assertTrue(validate_object_keys(keys_list, self.creds))
 
     def test_validate_object_keys_raise_exception_with_wrong_key(self):
         keys_list = ('language', 'username', 'password')
@@ -132,14 +108,12 @@ class TestsFileOperations(unittest.TestCase):
             validate_object_keys(keys_list, creds)
         self.assertEqual('Key is missing', str(ke.exception))
 
-    @patch('smarsy.parse.open_json_file')
-    def test_user_headers_object_is_the_same_like_in_file(self,
-                                                          mock_json_load):
+    def test_user_headers_object_is_the_same_like_in_file(self):
         expected = {
             'Accept-Encoding': 'gzip, deflate, br',
             'Connection': 'keep-alive'
         }
-        mock_json_load.return_value = expected
+        self.mock_json_load.return_value = expected
         actual = get_headers()
         self.assertEqual(actual, expected)
 
@@ -224,7 +198,6 @@ class TestsParse(unittest.TestCase):
 
 
 class TestPageContent(unittest.TestCase):
-
     def test_login_page_has_expected_title(self):
         html = '<html><title>Smarsy - Смарсі - Україна</title></html>'
         actual = validate_title(html)
