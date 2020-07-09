@@ -28,14 +28,16 @@ class TestsFileOperations(unittest.TestCase):
             'username': 'user',
             'password': 'pass'
         }
-        self.mock_json_load = patch('parse.open_json_file')
+        patcher = patch('smarsy.parse.open_json_file')
+        self.mock_json_load = patcher.start()
+        self.addCleanup(patcher.stop)
 
     def delete_cred_element_and_run_get_user_credentials(self, element):
         del self.creds[element]
         self.mock_json_load.return_value = self.creds
         with self.assertRaises(Exception) as ue:
             get_user_credentials()
-        return str(ue)
+        return str(ue.exception)
 
     def test_user_credentials_object_is_same_like_in_file(self):
         self.mock_json_load.return_value = self.creds
@@ -46,19 +48,19 @@ class TestsFileOperations(unittest.TestCase):
         element = 'username'
         self.assertEqual(
             f'Credentials are in the wrong format ({element} is missing)',
-            self.test_user_credentials_object_is_same_like_in_file(element))
+            self.delete_cred_element_and_run_get_user_credentials(element))
 
     def test_user_credentials_fails_if_there_is_no_language(self):
         element = 'language'
         self.assertEqual(
             f'Credentials are in the wrong format ({element} is missing)',
-            self.test_user_credentials_object_is_same_like_in_file(element))
+            self.delete_cred_element_and_run_get_user_credentials(element))
 
     def test_user_credentials_fails_if_there_is_no_password(self):
         element = 'password'
         self.assertEqual(
             f'Credentials are in the wrong format ({element} is missing)',
-            self.test_user_credentials_object_is_same_like_in_file(element))
+            self.delete_cred_element_and_run_get_user_credentials(element))
 
     @patch('builtins.open')
     @patch('json.load')
